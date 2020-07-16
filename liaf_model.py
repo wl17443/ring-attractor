@@ -1,56 +1,66 @@
 import numpy as np
-import matplotlib.pyplot as pl
+import matplotlib.pyplot as plt
+
+ms = 0.001
+mV = 0.001
+bigMOhm = 1000000
+nA = 0.000000001 
+
+# Parameters in the integrate and fire model
 
 class liaf:
     def __init__(self,
-            time_constant=30.0,
-            membrane_resistance=90.0,
-            voltage_threshold=-50.0,
-            voltage_reset=-65.0,
-            equilibrium=-85.0,
-            external_current=0.0):
+            membraneTimeConstant = 30*ms,
+            leakyReversalPotential = -85*mV,
+            resetPotential = -65*mV,
+            membraneResistance = 90*bigMOhm,
+            electrodeInputCurrent = 0*nA,
+            thresholdPotential = -50*mV):
 
-        self.time_constant = time_constant
-        self.membrane_resistance = membrane_resistance
-        self.voltage_threshold = voltage_threshold
-        self.voltage_reset = voltage_reset
-        self.equilibrium = equilibrium
-        self.external_current = external_current
+        self.membraneTimeConstant = membraneTimeConstant
+        self.leakyReversalPotential = leakyReversalPotential
+        self.resetPotential = resetPotential
+        self.membraneResistance = membraneResistance
+        self.electrodeInputCurrent = electrodeInputCurrent
+        self.thresholdPotential = thresholdPotential
  
-        self.potential = self.voltage_reset
+        self.potential = self.resetPotential
 
-    def update_potential(self, initial_potential, t):
+    def updatePotential(self, initialPotential, t):
         if self.potential == 0.0:
             self.hyperpolarize()
-        elif self.potential > self.voltage_threshold:
+        elif self.potential > self.thresholdPotential:
             self.generate_spike()
         else:
-            self.potential = (self.equilibrium +
-                    self.membrane_resistance * self.external_current +
-                    np.exp(-t/self.time_constant) * (initial_potential -
-                        self.equilibrium -
-                        self.membrane_resistance * self.external_current))
+            self.potential = (self.leakyReversalPotential +
+                    self.membraneResistance * self.electrodeInputCurrent +
+                    np.exp(-t/self.membraneTimeConstant) * (initialPotential -
+                        self.leakyReversalPotential -
+                        self.membraneResistance * self.electrodeInputCurrent))
 
 
     def hyperpolarize(self):
-        self.potential = self.voltage_reset
+        self.potential = self.resetPotential
 
     def generate_spike(self):
         self.potential = 0.0
 
-    def simulate(self, time):
+    def simulate(self, time, steps):
         # time is in milliseconds
 
-        potentials = []
-        currents = np.abs(np.sin(np.arange(time) + np.random.normal(size=[time])))
-        for msec in range(time):
-            self.external_current = currents[msec]
-        self.update_potential(self.potential, 1)
-        potentials.append(self.potential)
+        potentials = [self.resetPotential]
+        timesteps = np.linspace(0, time, num=steps)
+        currents = np.abs(np.sin(np.arange(len(timesteps)) + np.random.normal(size=[len(timesteps)])))*nA
+
+        for i, step in enumerate(np.diff(timesteps)):
+            self.electrodeInputCurrent = currents[i]
+            self.updatePotential(self.potential, step)
+            potentials.append(self.potential)
 
 
-      plt.plot(range(time), potentials)
+        plt.plot(timesteps, potentials)
+        plt.show()
 
 if __name__ == "__main__":
     neuron = liaf()
-    neuron.simulate(100)
+    neuron.simulate(1, 200)
