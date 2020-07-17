@@ -50,7 +50,7 @@ class liaf:
 
         potentials = [self.resetPotential]
         timesteps = np.linspace(0, time, num=steps)
-        currents = np.abs(np.sin(np.arange(len(timesteps)) + np.random.normal(size=[len(timesteps)])))*nA
+        currents = np.abs(np.sin(np.arange(len(timesteps)) + np.random.normal(size=[len(timesteps)])))*nA*0.6
 
         for i, step in enumerate(np.diff(timesteps)):
             self.electrodeInputCurrent = currents[i]

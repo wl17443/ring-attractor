@@ -41,6 +41,7 @@ class liaf:
     
     def voltage(self, time, old_voltage):
         v_t = (self.equilibrium - old_voltage + self.membrane_resistance*self.external_current) / self.time_constant
+        # I'm not using the time variable
         return v_t
 
 
