@@ -1,3 +1,5 @@
+# Leaky integrate and fire model
+
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -6,9 +8,7 @@ mV = 0.001
 bigMOhm = 1000000
 nA = 0.000000001 
 
-# Parameters in the integrate and fire model
-
-class liaf:
+class lif:
     def __init__(self,
             membraneTimeConstant = 10*ms,
             leakyReversalPotential = -75*mV,
@@ -25,15 +25,17 @@ class liaf:
         self.thresholdPotential = thresholdPotential
  
         self.potential = self.resetPotential
-        self.inSynapses = []
-        self.outSynapses = []
 
     def updatePotential(self):
+
+        # Depolarize after spike
         if self.potential == 0.0:
             self.potential = self.resetPotential
 
-        self.potential = self.potential + ((self.leakyReversalPotential - self.potential + self.membraneResistance*self.electrodeInputCurrent) / self.membraneTimeConstant) * ms
+        # Update membrane potential
+        self.potential += ((self.leakyReversalPotential - self.potential + self.membraneResistance*self.electrodeInputCurrent) / self.membraneTimeConstant) * ms
 
+        # Spiking mechanism
         if self.potential >= self.thresholdPotential:
             self.potential = 0.0
 
@@ -47,7 +49,6 @@ class electrode:
 
     def connect(self, neuron, weight=1.0):
         self.outSynapses[neuron] = weight
-
 
     def simulate(self, time):
         recording = []
@@ -70,9 +71,9 @@ class electrode:
 
 
 if __name__ == "__main__":
-    # fun = lambda time: np.abs(np.sin(time)*7)*nA
+    fun = lambda time: np.abs(np.sin(time)*3.1 + np.random.normal())*nA
     time = 1000
-    neuron = liaf()
+    neuron = lif()
     electrode = electrode(const=3.1*nA)
     # electrode = electrode(fun=fun)
     electrode.connect(neuron)
