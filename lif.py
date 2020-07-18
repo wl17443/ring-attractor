@@ -33,7 +33,11 @@ class lif:
             self.potential = self.resetPotential
 
         # Update membrane potential
-        self.potential += ((self.leakyReversalPotential - self.potential + self.membraneResistance*self.electrodeInputCurrent) / self.membraneTimeConstant) * ms
+        potentialDelta = ((self.leakyReversalPotential - self.potential + self.membraneResistance*self.electrodeInputCurrent) / self.membraneTimeConstant)*ms
+        self.potential += potentialDelta
+        print(potentialDelta)
+        print(self.potential)
+        print()
 
         # Spiking mechanism
         if self.potential >= self.thresholdPotential:
@@ -72,7 +76,7 @@ class electrode:
 
 if __name__ == "__main__":
     fun = lambda time: np.abs(np.sin(time)*3.1 + np.random.normal())*nA
-    time = 1000
+    time = 100
     neuron = lif()
     electrode = electrode(const=3.1*nA)
     # electrode = electrode(fun=fun)

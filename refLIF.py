@@ -43,8 +43,8 @@ class refLIF:
             self.potential = self.resetPotential
 
         # Update membrane potential
-        # TODO Check the formula for spike rate adaptation, may be missing some resistance
         self.potential += ((self.leakyReversalPotential - self.potential - self.spikeRateAdaptationConductance * (self.potential - self.potassiumReversalPotential) + self.membraneResistance*self.electrodeInputCurrent) / self.membraneTimeConstant) * ms
+        print(self.potential)
 
         # Update spike rate adaptation conductance
         self.spikeRateAdaptationConductance -= self.spikeRateAdaptationConductance/self.spikeRateAdaptationTimeConstant*ms
