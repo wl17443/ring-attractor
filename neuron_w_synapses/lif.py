@@ -1,6 +1,7 @@
 # Leaky integrate and fire model
 import numpy as np
 import matplotlib.pyplot as plt
+import seaborn as sns
 
 ms = 0.001
 mV = 0.001
@@ -20,39 +21,57 @@ class lif:
     potential = resetPotential
     synapticCurrent = 0.0
     timeFromSpike = 10.0 * ms
-    ocp = 0.0
+    Pmax = 1.0
+    synapticTimeConstant = 17.0 * ms
+    openChannelP = 0.0
 
-    def updatePotential(self):
+    def __init__(self, leaky=True, excitatory=True):
+        if not leaky:
+            self.leakyReversalPotential = 0.0
+
+        if not excitatory:
+            self.synapticReversalPotential = -80.0 * mV
+
+
+    def step(self):
+        self._hyperpolarize()
+
+        self._updateOpenChannelP()
+        self._updatePotential()
+        self._depolarize()
+
+        self.timeFromSpike += 1.0 * ms
+
+
+    def receiveActionPotential(self):
+        self.timeFromSpike = 0.0 * ms
+
+
+    def _updateOpenChannelP(self):
+        self.openChannelP =  self.Pmax / self.synapticTimeConstant * self.timeFromSpike * np.exp(1.0 - self.timeFromSpike / self.synapticTimeConstant)
+
+    def _updatePotential(self):
+        self.potential += (self.leakyReversalPotential 
+                           - self.potential 
+                           - 0.05 * self.openChannelP * (self.potential - self.synapticReversalPotential) 
+                           + self.membraneResistance * self.electrodeInputCurrent) / self.membraneTimeConstant * ms
+
+    def _hyperpolarize(self):
         if self.potential == 0.0:
             self.potential = self.resetPotential
 
-        self.timeFromSpike += 1.0 * ms
-        leakage = self.leakyReversalPotential - self.potential
-        externalCurrent = self.membraneResistance * self.electrodeInputCurrent
-        self.synapticCurrent = - 0.05 * self.openChannelP() * (self.potential -
-                                                              self.synapticReversalPotential)
-
-        self.potential += (leakage + externalCurrent +
-                           self.synapticCurrent) / self.membraneTimeConstant * ms
-
+    def _depolarize(self):
         if self.potential >= self.thresholdPotential:
             self.potential = 0.0
 
-        self.ocp = self.openChannelP()
 
-    def openChannelP(self):
-        Pmax = 1.0
-        timeConstant = 17.0 * ms
-        return Pmax / timeConstant * self.timeFromSpike * np.exp(1.0 - self.timeFromSpike / timeConstant)
 
 
 if __name__ == "__main__":
-    time = 150
+    time = 100
     neurons = [lif() for _ in range(2)]
 
     potentials = [[], []]
-    synapticCurrents = [[], []]
-    ocps = [[], []]
     for t in range(time):
         for i, neuron in enumerate(neurons):
             neurons[0].electrodeInputCurrent = 2.5* nA
@@ -60,34 +79,29 @@ if __name__ == "__main__":
                 neurons[1].electrodeInputCurrent = 2.5* nA
 
 
-            neuron.updatePotential()
+            neuron.step()
 
             if neuron.potential == 0.0:
-                neurons[1 - i].timeFromSpike = 0.0
+                neurons[1 - i].receiveActionPotential()
 
             potentials[i].append(neuron.potential)
-            synapticCurrents[i].append(neuron.synapticCurrent)
-            ocps[i].append(neuron.ocp)
 
-    fig, ax = plt.subplots(3, 2, figsize=(10, 10))
-    ax[0, 0].plot(range(time), potentials[0])
-    ax[0, 0].set_title("Potentials of neuron 1")
+    fig, axes = plt.subplots(3, 1, figsize=(12, 10))
+    axes[0].plot(range(time), potentials[0])
+    axes[0].set_title("Voltage of first neuron")
+    # sns.lineplot(range(time), potentials[0], ax=axes[0])
+    # sns.lineplot(range(time), potentials[1], ax=axes[1])
 
-    ax[0, 0].plot(range(time), potentials[1], color="g")
 
-    ax[1, 0].plot(range(time), potentials[1])
-    ax[1, 0].set_title("Potentials of neuron 2")
+    axes[1].plot(range(time), potentials[1])
+    axes[1].set_title("Voltage of second neuron")
 
-    ax[0, 1].plot(range(time), synapticCurrents[0])
-    ax[0, 1].set_title("Synaptic current of neuron 1")
+    axes[2].plot(range(time), potentials[0])
+    axes[2].plot(range(time), potentials[1])
+    axes[2].set_title("Voltages of both neurons overlapped")
+    axes[2].set_xlabel("Time (ms)")
 
-    ax[1, 1].plot(range(time), synapticCurrents[1])
-    ax[1, 1].set_title("Synaptic current of neuron 2")
-
-    ax[2, 0].plot(range(time), ocps[0])
-    ax[2, 0].set_title("Open channel probability 1")
-
-    ax[2, 1].plot(range(time), ocps[1])
-    ax[2, 1].set_title("Open channel probability 2")
+    for ax in axes:
+        ax.set_ylabel("Voltage (mV)")
 
     plt.show()
