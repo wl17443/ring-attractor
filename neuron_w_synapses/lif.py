@@ -19,7 +19,7 @@ class lif:
 
     potential = resetPotential
     synapticCurrent = 0.0
-    timeFromSpike = 10. * ms
+    timeFromSpike = 10.0 * ms
     ocp = 0.0
 
     def updatePotential(self):
@@ -29,7 +29,7 @@ class lif:
         self.timeFromSpike += 1.0 * ms
         leakage = self.leakyReversalPotential - self.potential
         externalCurrent = self.membraneResistance * self.electrodeInputCurrent
-        self.synapticCurrent = -0.05 * self.openChannelP() * (self.potential -
+        self.synapticCurrent = - 0.05 * self.openChannelP() * (self.potential -
                                                               self.synapticReversalPotential)
 
         self.potential += (leakage + externalCurrent +
@@ -42,27 +42,27 @@ class lif:
 
     def openChannelP(self):
         Pmax = 1.0
-        timeConstant = 10.0 * ms
+        timeConstant = 17.0 * ms
         return Pmax / timeConstant * self.timeFromSpike * np.exp(1.0 - self.timeFromSpike / timeConstant)
 
 
 if __name__ == "__main__":
-    time = 100
+    time = 150
     neurons = [lif() for _ in range(2)]
-    # neurons[0].synapticReversalPotential = -80.0 * mV
-    # neurons[1].synapticReversalPotential = -80.0 * mV
 
     potentials = [[], []]
     synapticCurrents = [[], []]
-    spikes = [[], []]
     ocps = [[], []]
     for t in range(time):
         for i, neuron in enumerate(neurons):
-            neuron.electrodeInputCurrent = 2.5 * nA
+            neurons[0].electrodeInputCurrent = 2.5* nA
+            if t > 0:
+                neurons[1].electrodeInputCurrent = 2.5* nA
+
+
             neuron.updatePotential()
 
             if neuron.potential == 0.0:
-                spikes[i].append(t)
                 neurons[1 - i].timeFromSpike = 0.0
 
             potentials[i].append(neuron.potential)
@@ -73,7 +73,7 @@ if __name__ == "__main__":
     ax[0, 0].plot(range(time), potentials[0])
     ax[0, 0].set_title("Potentials of neuron 1")
 
-    # ax[0, 0].plot(range(time), potentials[1], color="g")
+    ax[0, 0].plot(range(time), potentials[1], color="g")
 
     ax[1, 0].plot(range(time), potentials[1])
     ax[1, 0].set_title("Potentials of neuron 2")
@@ -90,9 +90,4 @@ if __name__ == "__main__":
     ax[2, 1].plot(range(time), ocps[1])
     ax[2, 1].set_title("Open channel probability 2")
 
-    for spiketime in spikes[1]:
-        ax[2, 0].axvline(spiketime, color="g", linewidth=.5)
-
-    for spiketime in spikes[0]:
-        ax[2, 1].axvline(spiketime, color="g", linewidth=.5)
     plt.show()
