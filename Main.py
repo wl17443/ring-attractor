@@ -21,8 +21,8 @@ if __name__ == '__main__':
     # TODO find a better way of defining siblings than this bs 
     for i in range(NR_OF_LIAF_NEURONS):
         LIAF_NEURONS.append(LeakyIntegrateAndFireNeuron(Id=i, siblings=[np.abs(i-1)], conns=None, main_conn=None))
-        # TODO Connect neurons together     
     
+    # TODO automatically connect neurons together and to the main process 
     # Manually adding conns for two neurons 
     end1, end2 = mp.Pipe()
     LIAF_NEURONS[0].conns = end1
@@ -51,6 +51,7 @@ if __name__ == '__main__':
     dt = 0.25*ms 
     t = np.linspace(0,T,int(T/dt)+1)
 
+    # TODO implement a live spike train presenter  
     plt.plot(t,spikeTrain1)
     plt.plot(t,spikeTrain2)
     plt.show()
