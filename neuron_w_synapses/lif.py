@@ -1,7 +1,6 @@
 # Leaky integrate and fire model
 import numpy as np
 import matplotlib.pyplot as plt
-import seaborn as sns
 
 ms = 0.001
 mV = 0.001
@@ -21,8 +20,8 @@ class lif:
     potential = resetPotential
     synapticCurrent = 0.0
     timeFromSpike = 10.0 * ms
-    Pmax = 1.0
-    synapticTimeConstant = 17.0 * ms
+    Pmax = 0.5
+    synapticTimeConstant = 10.0 * ms
     openChannelP = 0.0
 
     def __init__(self, leaky=True, excitatory=True):
@@ -53,7 +52,7 @@ class lif:
     def _updatePotential(self):
         self.potential += (self.leakyReversalPotential 
                            - self.potential 
-                           - 0.05 * self.openChannelP * (self.potential - self.synapticReversalPotential) 
+                           - 0.15 * self.openChannelP * (self.potential - self.synapticReversalPotential) 
                            + self.membraneResistance * self.electrodeInputCurrent) / self.membraneTimeConstant * ms
 
     def _hyperpolarize(self):
@@ -67,16 +66,18 @@ class lif:
 
 
 
+
 if __name__ == "__main__":
-    time = 100
-    neurons = [lif() for _ in range(2)]
+    time = 1000
+    # neurons = [lif(excitatory=True) for _ in range(2)]
+    neurons = [lif(excitatory=False) for _ in range(2)]
 
     potentials = [[], []]
     for t in range(time):
         for i, neuron in enumerate(neurons):
-            neurons[0].electrodeInputCurrent = 2.5* nA
-            if t > 0:
-                neurons[1].electrodeInputCurrent = 2.5* nA
+            neurons[0].electrodeInputCurrent = 1.8* nA
+            if t > 8:
+                neurons[1].electrodeInputCurrent = 1.8* nA
 
 
             neuron.step()
