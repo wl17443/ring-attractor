@@ -19,22 +19,27 @@ class LeakyIntegrateAndFireNeuron:
     Rmgs = 0.15
     maxs = 0.5
     Ts = 10*ms 
-    Es = -0*mV 
+    Es = -80*mV 
 
     T = 1
     dt = 0.25*ms 
     t = np.linspace(0,T,int(T/dt)+1)
 
-    def __init__(self, Id, siblings, conns, main_conn):
+    def __init__(self, Id, siblings, sibling_conns, main_conn):
         # TODO Should contain all the neuron's it's connected to
         # Includes getting info from and getting info to
         self.id = Id 
+        # TODO multiple synaptic weights 
         self.Psynapse = 0 
         self.spikeTrain = np.zeros(len(self.t))
         self.siblings = siblings
-        self.v = 0 
-        self.conns = conns 
+        self.sibling_conns = sibling_conns 
         self.main_conn = main_conn
+        # TODO multiple presynaptic voltages 
+        # Get 1 for fired and 0 for not fired from coupled neuron(s)
+        self.v = 0 
+        # TODO add output neuron (boolean) parameter 
+        # TODO set a neuron type parameter in __init__
 
     def f(self, v, ps):
         return (self.El-v-self.Rmgs*ps*(v-self.Es)+self.RmIe)/self.Tm
@@ -43,33 +48,31 @@ class LeakyIntegrateAndFireNeuron:
         return -ps/self.Ts
 
     def simulate(self):
-        # TODO get spike data from sibling neurons, if any 
-        # using with and Lock to control access to resources 
+        # Randomly choose a starting membrane potential 
         self.spikeTrain[0] = random.randrange(self.resetPotential/mV,self.thresholdPotential/mV)*mV
-        # self.spikeTrain[0] = self.resetPotential
+        # Get spike data from sibling neurons, if any 
         for i in range(1,len(self.t)):
-
-            # Send and receive past timestep voltage from coupled neuron 
+            # Send and receive spiked (boolean) from coupled neuron(s)
             if self.id%2 == 0:
-                self.v = self.conns.recv()
-                self.conns.send(self.spikeTrain[i-1])
+                self.v = self.sibling_conns.recv()
+                self.sibling_conns.send(self.spikeTrain[i-1]>=self.thresholdPotential)
             else:
-                self.conns.send(self.spikeTrain[i-1])
-                self.v = self.conns.recv()
-            
-            # print(self.v)
+                self.sibling_conns.send(self.spikeTrain[i-1]>=self.thresholdPotential)
+                self.v = self.sibling_conns.recv()
 
             # With voltage from coupled neuron, if it's spiked increase synaptic weight 
             #   else decay with time constant 
-            if self.v >= self.thresholdPotential:
+            if self.v:
                 self.Psynapse += self.maxs
             else:
                 self.Psynapse = self.Psynapse + self.p(self.Psynapse)*self.dt
             
+            # Using Euler's method, calculate the current membrane potential 
             if self.spikeTrain[i-1] >= self.thresholdPotential:
                 self.spikeTrain[i-1] = 0*mV
                 self.spikeTrain[i] = self.resetPotential 
             else: 
                 self.spikeTrain[i] = self.spikeTrain[i-1]+self.f(self.spikeTrain[i-1], self.Psynapse)*self.dt
 
+        # Upon simulation complete, send spike train to mother process 
         self.main_conn.send(self.spikeTrain)
