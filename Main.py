@@ -30,20 +30,16 @@ if __name__ == '__main__':
         # Create mother to children processes pipes 
         pa,c = mp.Pipe()
         MOTHER_PROCESS_CONN_ENDS.append(pa)
-        LIAF_NEURONS.append(LeakyIntegrateAndFireNeuron(Id=i, siblings=[np.abs(i-1)], sibling_conns=None, main_conn=c))
+        # TODO randomly choose which neurons are excitatory/inhibitory according to a probability (?)
+        LIAF_NEURONS.append(LeakyIntegrateAndFireNeuron(Id=i, neurontype='i', siblings=[np.abs(i-1)], sibling_conns=None, main_conn=c))
     
-    # TODO automatically connect neurons together and to the main process 
-    # TODO connect to a random number of next layer neurons 
-    # TODO randomly choose which neurons are excitatory/inhibitory 
+    # TODO connect to a random number of next layer neurons determined by user 
+    
     # Manually adding conns for two neurons 
     end1, end2 = mp.Pipe()
     LIAF_NEURONS[0].sibling_conns = end1
     LIAF_NEURONS[1].sibling_conns = end2
-        # for j in range(len(LIAF_NEURONS[i].siblings)):
-        #     par_con, child_con = mp.Pipe()
-        #     LIAF_NEURONS[i].to_ends.append(par_con)
-        #     LIAF_NEURONS[j].from_ends.append(child_con)
-
+    
     # TODO Create a layer of neurons to a single neuron 
 
     # Start parallelised neuron processes
