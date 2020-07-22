@@ -6,21 +6,19 @@ from Dictionaries import *
 
 class LeakyIntegrateAndFireNeuron:
 
-    # Synapse Parameters 
-    Rmgs = 0.15
-    maxs = 0.5
-    Ts = 10*ms 
-
     # Static attributes that are shared across all LIAF neurons
-    T = 1
-    dt = 0.25*ms 
-    t = np.linspace(0,T,int(T/dt)+1)
+    # T = 1
 
-    def __init__(self, Id, neurontype, neuron_params, to_siblings_conns, from_siblings_conns, main_conn):
+    def __init__(self, Id, neurontype, neuron_params, simulation_time, to_siblings_conns, from_siblings_conns, main_conn):
         self.id = Id 
         # Multiple synaptic weights 
         self.Psynapses = np.zeros(len(from_siblings_conns))
 
+        # Simulation time variables 
+        self.T = simulation_time
+        self.dt = 0.25*ms 
+        self.t = np.linspace(0,self.T,int(self.T/self.dt)+1)
+        
         # Initialise neuron spike train to 0*len(t)
         self.spikeTrain = np.zeros(len(self.t))
 
@@ -41,11 +39,12 @@ class LeakyIntegrateAndFireNeuron:
         self.Es = neuronType[neurontype]
         self.neuron_params = neuron_params
 
+
     def f(self, v):
-        return (self.neuron_params['El']-v-(self.Rmgs*self.Psynapses*(v-self.Es)).sum()+self.neuron_params['RmIe'])/self.neuron_params['Tm']
+        return (self.neuron_params['El']-v-(self.neuron_params['Rmgs']*self.Psynapses*(v-self.Es)).sum()+self.neuron_params['RmIe'])/self.neuron_params['Tm']
     
     def p(self, ps):
-        return -ps/self.Ts
+        return -ps/self.neuron_params['Ts']
 
     def simulate(self):
         # Randomly choose a starting membrane potential 
@@ -76,7 +75,7 @@ class LeakyIntegrateAndFireNeuron:
             if self.from_siblings > 0:
                 for sibling in range(self.from_siblings):
                     if self.fire_signals[sibling]:
-                        self.Psynapses[sibling] += self.maxs
+                        self.Psynapses[sibling] += self.neuron_params['maxs']
                     else:
                         self.Psynapses[sibling] = self.Psynapses[sibling] + self.p(self.Psynapses[sibling])*self.dt
                 

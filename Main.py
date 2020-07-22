@@ -16,9 +16,9 @@ LIAF_NEURONS = []
 NEURON_SPIKE_TRAINS = []
 PROCESSES = []
 
-T = 1
+# T = 1
 dt = 0.25*ms 
-t = np.linspace(0,T,int(T/dt)+1)
+t = np.linspace(0,SIMULATION_TIME,int(SIMULATION_TIME/dt)+1)
 
 
 if __name__ == '__main__':
@@ -34,7 +34,7 @@ if __name__ == '__main__':
         if rnd.random() >= 0.5:
             ntype = 'i'
         else: ntype = 'e'
-        LIAF_NEURONS.append(LeakyIntegrateAndFireNeuron(Id=i, neurontype=ntype, neuron_params=neuronParams, to_siblings_conns=[], from_siblings_conns=[], main_conn=c))
+        LIAF_NEURONS.append(LeakyIntegrateAndFireNeuron(Id=i, neurontype=ntype, neuron_params=neuronParams, simulation_time=SIMULATION_TIME, to_siblings_conns=[], from_siblings_conns=[], main_conn=c))
     
     # TODO connect to a random number of next layer neurons determined by user 
     # This ultimately defines how the neurons are connected to each other 
