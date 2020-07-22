@@ -45,18 +45,17 @@ if __name__ == '__main__':
                 LIAF_NEURONS[neuron_nr].to_siblings_conns.append(end1)
                 LIAF_NEURONS[(layer_nr+1)*NETWORK_STRUCTURE[layer_nr]].from_siblings_conns.append(end2)
 
-    # TODO    
-
     # Start parallelised neuron processes
     for neuron in LIAF_NEURONS:
         PROCESSES.append(mp.Process(target=neuron.simulate))
     for process in PROCESSES:
         process.start()
 
-    for pa in MOTHER_PROCESS_CONN_ENDS:
-        spikeTrain = pa.recv()
+    for i in range(len(MOTHER_PROCESS_CONN_ENDS)):
+        spikeTrain = MOTHER_PROCESS_CONN_ENDS[i].recv()
         NEURON_SPIKE_TRAINS.append(spikeTrain)
-        plt.plot(t, spikeTrain)
+        plt.plot(t, spikeTrain, label="Neuron"+str(i))
 
     # TODO implement a live spike train presenter (?)
+    plt.legend()
     plt.show()

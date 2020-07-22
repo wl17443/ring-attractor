@@ -6,8 +6,7 @@ from Dictionaries import *
 
 class LeakyIntegrateAndFireNeuron:
 
-    # Static attributes that are shared across all LIAF neurons
-    # T = 1
+    # Static attributes that are shared across all LIAF neurons: atm None 
 
     def __init__(self, Id, neurontype, neuron_params, simulation_time, to_siblings_conns, from_siblings_conns, main_conn):
         self.id = Id 
@@ -18,7 +17,7 @@ class LeakyIntegrateAndFireNeuron:
         self.T = simulation_time
         self.dt = 0.25*ms 
         self.t = np.linspace(0,self.T,int(self.T/self.dt)+1)
-        
+
         # Initialise neuron spike train to 0*len(t)
         self.spikeTrain = np.zeros(len(self.t))
 
