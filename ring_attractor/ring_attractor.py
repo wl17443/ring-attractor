@@ -4,7 +4,7 @@ from lif_model import lif
 from utils import make_connectivity_matrix, connect_neurons
 
 time = 1000
-n = 4
+n = 35
 
 neurons = [lif(ID) for ID in range(n)]
 weights = np.linspace(1, -1.2, n)
@@ -14,29 +14,31 @@ connect_neurons(cv, neurons, n)
 
 poissonInput = np.random.poisson(lam=1.0, size=time)
 poissonWeight = 1.0
-poissonConnections = [1, 2]
+poissonConnections = [4,5,6,7,8]
 
 potentials = [[] for _ in range(n)]
 for t in range(time):
     for neuron in neurons:
 
-        if neuron.id in poissonConnections:
-            neuron.Ip = poissonInput[t] * poissonWeight
+        if t < 200:
+            if neuron.id in poissonConnections:
+                neuron.Ip = poissonInput[t] * poissonWeight
+        else:
+            if neuron.id in poissonConnections:
+                neuron.Ip = 0
+            
 
         neuron.step()
 
-        potentials[neuron.id].append(neuron.potential)
+        potentials[neuron.id].append(neuron.V)
 
 
-fig, axes = plt.subplots(n + 1, 1, figsize=(10, 10))
+fig, axes = plt.subplots(n, 1, figsize=(10, 10))
 
-for i, ax in enumerate(axes[:-1]):
+for i, ax in enumerate(axes):
     ax.plot(potentials[i])
-    ax.set_title(f"Voltage of neuron {i}")
-
-
-for i in range(n):
-    axes[-1].plot(potentials[i])
-    axes[-1].set_title("Voltage of all neurons")
+    ax.set_ylabel(i)
+    ax.set_yticklabels([])
+    ax.set_yticks([])
 
 plt.show()
