@@ -4,13 +4,13 @@ from ScalingTools import *
 import numpy as np 
 import matplotlib.pyplot as plt
 import random as rnd 
-
+from Dictionaries import *
 # Simulation times 
 SIMULATION_TIME = 1
 TIME_STEP = 0.25*ms
 TOTAL_TIME_STEPS = np.linspace(0, SIMULATION_TIME, int(SIMULATION_TIME/TIME_STEP)+1)
 
-NETWORK_STRUCTURE = [5, 1]
+NETWORK_STRUCTURE = [2, 1]
 NR_OF_LIAF_NEURONS = np.sum(NETWORK_STRUCTURE)
 LIAF_NEURONS = []
 NEURON_SPIKE_TRAINS = []
@@ -34,7 +34,7 @@ if __name__ == '__main__':
         if rnd.random() >= 0.5:
             ntype = 'i'
         else: ntype = 'e'
-        LIAF_NEURONS.append(LeakyIntegrateAndFireNeuron(Id=i, neurontype=ntype, to_siblings_conns=[], from_siblings_conns=[], main_conn=c))
+        LIAF_NEURONS.append(LeakyIntegrateAndFireNeuron(Id=i, neurontype=ntype, neuron_params=neuronParams, to_siblings_conns=[], from_siblings_conns=[], main_conn=c))
     
     # TODO connect to a random number of next layer neurons determined by user 
     # This ultimately defines how the neurons are connected to each other 
@@ -44,14 +44,8 @@ if __name__ == '__main__':
                 end1, end2 = mp.Pipe()
                 LIAF_NEURONS[neuron_nr].to_siblings_conns.append(end1)
                 LIAF_NEURONS[(layer_nr+1)*NETWORK_STRUCTURE[layer_nr]].from_siblings_conns.append(end2)
-                
 
-    # Manually adding conns for two neurons 
-    # end1, end2 = mp.Pipe()
-    # LIAF_NEURONS[0].sibling_conns = end1
-    # LIAF_NEURONS[1].sibling_conns = end2
-
-    # TODO Create a layer of neurons to a single neuron 
+    # TODO    
 
     # Start parallelised neuron processes
     for neuron in LIAF_NEURONS:
