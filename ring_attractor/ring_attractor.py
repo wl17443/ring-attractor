@@ -2,12 +2,15 @@ import numpy as np
 import matplotlib.pyplot as plt
 from lif_model import lif
 from utils import make_connectivity_matrix, connect_neurons
+import pandas as pd
+import seaborn as sns
 
 time = 1000
 n = 35
 
 neurons = [lif(ID) for ID in range(n)]
-weights = np.linspace(1, -1.2, n)
+weights = np.linspace(0.5, -5, n)
+
 cv = make_connectivity_matrix(weights, n)
 connect_neurons(cv, neurons, n)
 
@@ -42,3 +45,9 @@ for i, ax in enumerate(axes):
     ax.set_yticks([])
 
 plt.show()
+
+df = pd.DataFrame(potentials)
+spikes = (df == 0.0).astype(int) * np.arange(time)
+plt.eventplot(np.array(spikes))
+plt.show()
+
