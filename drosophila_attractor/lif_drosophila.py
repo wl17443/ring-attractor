@@ -1,6 +1,6 @@
 # Leaky integrate and fire model
 from scipy.stats import norm
-from numpy import sin, pi, linspace
+from numpy import sin, pi, arange
 from units import *
 
 
@@ -53,13 +53,13 @@ class lif:
 
         def Irise(t):
             return sin(t * pi / 2 - pi / 2)
-        risetime = linspace(0, 2, self.dt)
+        risetime = arange(0, 2 * ms, self.dt)
         riseMin = min([Irise(t) for t in risetime])
         riseMax = max([Irise(t) for t in risetime])
 
         def Ifall(t):
             return 2 ** (-(t - 2)/self.tpsc)
-        falltime = linspace(2, PSCtrace, self.dt)
+        falltime = arange(2 * ms, PSCtrace, self.dt)
         fallMin = min([Ifall(t) for t in falltime])
         fallMax = max([Ifall(t) for t in falltime])
 
@@ -76,14 +76,14 @@ class lif:
         # TODO move the stuff inside here somewhere else, it need to be initialized only one time
 
         def apRise(t):
-            return norm.pdf(-1 + t / (self.ts / 2))
-        risetime = linspace(0, self.tap/2, self.dt)
+            return norm.pdf(-1 + t / (self.tap / 2))
+        risetime = arange(0, self.tap/2, self.dt)
         riseMin = min([apRise(t) for t in risetime])
         riseMax = max([apRise(t) for t in risetime])
 
         def apFall(t):
             return sin((t - self.tap/2) * pi/self.tap + pi/2)
-        falltime = linspace(self.tap/2, self.tap, self.dt)
+        falltime = arange(self.tap/2, self.tap, self.dt)
         fallMin = min([apFall(t) for t in falltime])
         fallMax = max([apFall(t) for t in falltime])
 
