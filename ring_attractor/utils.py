@@ -1,5 +1,7 @@
 import numpy as np
+from scipy import signal
 import matplotlib.pyplot as plt
+
 
 def get_indeces_of_kth_diagonal(a, k):
     # Copypasted from stack overflow :)
@@ -11,13 +13,16 @@ def get_indeces_of_kth_diagonal(a, k):
     else:
         return rows, cols
 
+
 def make_connectivity_matrix(weights, n):
-    # Probably won't be used later, automatically set up a connectivity matrix 
-    connectivity_matrix = np.zeros([n,n])
+    # Probably won't be used later, automatically set up a connectivity matrix
+    connectivity_matrix = np.zeros([n, n])
 
     for i, w in enumerate(weights):
-        connectivity_matrix[get_indeces_of_kth_diagonal(connectivity_matrix, i)] = w
-        connectivity_matrix[get_indeces_of_kth_diagonal(connectivity_matrix, -i)] = w
+        connectivity_matrix[get_indeces_of_kth_diagonal(
+            connectivity_matrix, i)] = w
+        connectivity_matrix[get_indeces_of_kth_diagonal(
+            connectivity_matrix, -i)] = w
 
     # connectivity_matrix[connectivity_matrix < -1.01] = 0.0
     return connectivity_matrix
@@ -33,18 +38,21 @@ def connect_neurons(connectivity_matrix, neurons, n):
                 continue
             neurons[row].synapses[neurons[col]] = connectivity_matrix[row, col]
             neurons[col].synapses[neurons[row]] = connectivity_matrix[col, row]
-    
 
 
 def check_connectivity(neurons):
-    #TODO
+    # TODO
     return
+
 
 if __name__ == "__main__":
     # This is just to show the connectivity matrix
-    n = 12
-    harvest = make_connectivity_matrix(np.linspace(1,-1.6,n), n)
-    fig, ax = plt.subplots(figsize=(10,10))
+    n = 20
+    # weights = signal.ricker(n, 4.0)
+    weights = [0, 1, -1, -1, *[0 for _ in range(n-4)]]
+
+    harvest = make_connectivity_matrix(weights, n)
+    fig, ax = plt.subplots(figsize=(10, 10))
     im = ax.imshow(harvest)
 
     for i in range(n):
