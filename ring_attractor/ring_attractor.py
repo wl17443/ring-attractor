@@ -19,7 +19,7 @@ connect_neurons(cv, neurons, n)
 potentials = [[] for _ in range(n)]
 for t in range(time):
     for neuron in neurons:
-        if neuron.id == 0:
+        if neuron.id == 5:
             if t < 200:
                 neuron.Iext = 1.9 * 1e-9
             if t > 200:
