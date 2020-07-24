@@ -6,18 +6,25 @@ import random as rnd
 
 # Constants of neuron network 
 NR_OF_NEURONS = 20
-EXC = 4
+EXC = 2
 INH = 6
 # Defining the connectivity using a 2-4 topology 
 connectivity = np.zeros((NR_OF_NEURONS,NR_OF_NEURONS))
 for i in range(NR_OF_NEURONS):
-    for j in range(max(i-EXC,0),min(i+EXC+1,NR_OF_NEURONS)):
+    for j in range(i-INH, i+INH+1):
         if i!=j:
-            connectivity[i,j] = 1
-    for j in range(max(i-INH,0),min(i+INH+1,NR_OF_NEURONS)):
-        if i!=j and j<i-EXC or j>i+EXC:
-            connectivity[i,j] = -1
-    
+            if j >= NR_OF_NEURONS:
+                connectivity[i,j%NR_OF_NEURONS] = -1
+            else:
+                connectivity[i,j] = -1 
+
+    for j in range(i-EXC, i+EXC+1):
+        if i!=j:
+            if j >= NR_OF_NEURONS:
+                connectivity[i,j%NR_OF_NEURONS] = 1
+            else:
+                connectivity[i,j] = 1 
+
 # plt.matshow(connectivity)
 # plt.show()
 
@@ -74,10 +81,11 @@ r_avg = 20*Hz
 B = 15*Hz 
 freq = 20*Hz
 def r(t):
-    if rnd.random() < (r_avg+B*np.sin(2*np.pi*freq*t))*dt:
-        return 40*nA
-    else: 
-        return 0 
+    # if rnd.random() < (r_avg+B*np.sin(2*np.pi*freq*t))*dt:
+    #     return 40*nA
+    # else: 
+    #     return 0 
+    return 1*nA
 
 def simulate():
     SPIKE_TRAINS[:,0] = V_rest
@@ -87,7 +95,7 @@ def simulate():
         for neuron in range(NR_OF_NEURONS):
             if REFRACTORY_TIMES[neuron] > 0:
                 REFRACTORY_TIMES[neuron] -= dt
-                SPIKE_TRAINS[neuron,time] = SPIKE_TRAINS[neuron,time-1]
+                SPIKE_TRAINS[neuron,time] = SPIKE_TRAINS[neuron,time-1]+f(I_leak(SPIKE_TRAINS[neuron,time-1]),0,0)*dt
             if SPIKE_TRAINS[neuron,time-1] >= v_thresh:
                 SPIKE_TRAINS[neuron,time-1] = 0 
                 SPIKE_TRAINS[neuron,time] = V_reset
