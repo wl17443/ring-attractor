@@ -27,7 +27,7 @@ class lif:
         self.Iext = 0.0
         self.V = self.Vr  # Membrane potential, set at reset
         self.dt = 1 * ms
-        self.ts = 2.0
+        self.ts = 1
         self.kexc = 1 / (self.tau_syn_exc * exp(-1))
         self.kinh = 1 / (self.tau_syn_inh * exp(-1))
 
