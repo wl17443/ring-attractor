@@ -1,4 +1,3 @@
-
 from numpy import exp
 
 mV = 1e-3
@@ -21,11 +20,11 @@ class LIF:
     El = -70.0 * mV  # Leaky reversal potential
     Vr = -80.0 * mV  # Reset potential
 
-    def __init__(self, ID):
+    def __init__(self, ID, dt=1):
         self.id = ID
         self.Iext = 0.0
         self.V = self.Vr  # Membrane potential, set at reset
-        self.dt = 1 * ms
+        self.dt = dt * ms
         self.time_from_spike = 1
         self.kexc = 1 / (self.tau_syn_exc * exp(-1))
         self.kinh = 1 / (self.tau_syn_inh * exp(-1))
@@ -68,7 +67,7 @@ class LIF:
                 self.Iext) / self.Cm
 
     def Il(self):
-        return self.Cm/self.tau_m * (self.V - self.El)
+        return self.Cm / self.tau_m * (self.V - self.El)
 
     def Is_inh(self):
         I = 0
