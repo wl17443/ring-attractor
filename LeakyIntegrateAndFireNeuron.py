@@ -8,7 +8,7 @@ class LeakyIntegrateAndFireNeuron:
 
     # Static attributes that are shared across all LIAF neurons: atm None 
 
-    def __init__(self, Id, neurontype, neuron_params, simulation_time, to_siblings_conns, from_siblings_conns, main_conn):
+    def __init__(self, Id, neuron_params, simulation_time, to_siblings_conns, from_siblings_conns, main_conn):
         self.id = Id 
         # Multiple synaptic weights 
         self.Psynapses = np.zeros(len(from_siblings_conns))
@@ -31,15 +31,17 @@ class LeakyIntegrateAndFireNeuron:
         self.main_conn = main_conn
 
         # Multiple presynaptic fires 
-        # Get 1 for fired and 0 for not fired from coupled neuron(s)
+        # Send output fire voltage 
         self.fire_signals = np.zeros(len(from_siblings_conns))
 
         # Neuron parameters defined by neuron type and other user inputs 
-        self.Es = neuronType[neurontype]
+        # self.Es = neuronType[neurontype]
         self.neuron_params = neuron_params
 
 
     def f(self, v):
+        # TODO change Es according to the orientation of connected neurons 
+
         return (self.neuron_params['El']-v-(self.neuron_params['Rmgs']*self.Psynapses*(v-self.Es)).sum()+self.neuron_params['RmIe'])/self.neuron_params['Tm']
     
     def p(self, ps):
@@ -55,7 +57,7 @@ class LeakyIntegrateAndFireNeuron:
             if self.id%2==0:
                 if self.to_siblings > 0:
                     for to_sibling in self.to_siblings_conns:
-                        to_sibling.send(self.spikeTrain[i-1]>=self.neuron_params['thresholdPotential'])
+                        to_sibling.send(self.spikeTrain[i-1])
                 # for from_sibling in self.from_siblings_conns:
                 #     self.fire_signals[from_sibling] = from_sibling.recv()
                 if self.from_siblings > 0:
@@ -67,13 +69,13 @@ class LeakyIntegrateAndFireNeuron:
                         self.fire_signals[from_sibling_nr] = self.from_siblings_conns[from_sibling_nr].recv()
                 if self.to_siblings > 0:
                     for to_sibling in self.to_siblings_conns:
-                        to_sibling.send(self.spikeTrain[i-1]>=self.neuron_params['thresholdPotential'])
+                        to_sibling.send(self.spikeTrain[i-1])
         
             # With voltage from coupled neuron, if it's spiked increase synaptic weight 
             #   else decay with time constant
             if self.from_siblings > 0:
                 for sibling in range(self.from_siblings):
-                    if self.fire_signals[sibling]:
+                    if self.fire_signals[sibling]>=self.neuron_params['thresholdPotential']:
                         self.Psynapses[sibling] += self.neuron_params['maxs']
                     else:
                         self.Psynapses[sibling] = self.Psynapses[sibling] + self.p(self.Psynapses[sibling])*self.dt

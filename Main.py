@@ -7,23 +7,16 @@ import random as rnd
 from Dictionaries import *
 # Simulation times 
 SIMULATION_TIME = 1
-TIME_STEP = 0.25*ms
-TOTAL_TIME_STEPS = np.linspace(0, SIMULATION_TIME, int(SIMULATION_TIME/TIME_STEP)+1)
-
-NETWORK_STRUCTURE = [2, 1]
-NR_OF_LIAF_NEURONS = np.sum(NETWORK_STRUCTURE)
-LIAF_NEURONS = []
-NEURON_SPIKE_TRAINS = []
-PROCESSES = []
-
-# T = 1
 dt = 0.25*ms 
 t = np.linspace(0,SIMULATION_TIME,int(SIMULATION_TIME/dt)+1)
+def SimulateLayeredNeuronNetwork():
+    NETWORK_STRUCTURE = [2, 1]
+    NR_OF_LIAF_NEURONS = np.sum(NETWORK_STRUCTURE)
+    LIAF_NEURONS = []
+    NEURON_SPIKE_TRAINS = []
+    PROCESSES = []
 
-
-if __name__ == '__main__':
     # Initialising neurons 
-    # TODO find a better way of defining siblings than this bs 
     MOTHER_PROCESS_CONN_ENDS = []
 
     for i in range(NR_OF_LIAF_NEURONS):
@@ -31,10 +24,7 @@ if __name__ == '__main__':
         pa,c = mp.Pipe()
         MOTHER_PROCESS_CONN_ENDS.append(pa)
         # Randomly choose which neurons are excitatory/inhibitory according to a probability (?)
-        if rnd.random() >= 0.5:
-            ntype = 'i'
-        else: ntype = 'e'
-        LIAF_NEURONS.append(LeakyIntegrateAndFireNeuron(Id=i, neurontype=ntype, neuron_params=neuronParams, simulation_time=SIMULATION_TIME, to_siblings_conns=[], from_siblings_conns=[], main_conn=c))
+        LIAF_NEURONS.append(LeakyIntegrateAndFireNeuron(Id=i, neuron_params=neuronParams, simulation_time=SIMULATION_TIME, to_siblings_conns=[], from_siblings_conns=[], main_conn=c))
     
     # TODO connect to a random number of next layer neurons determined by user 
     # This ultimately defines how the neurons are connected to each other 
@@ -59,3 +49,22 @@ if __name__ == '__main__':
     # TODO implement a live spike train presenter (?)
     plt.legend()
     plt.show()
+
+def SimulateRingModel():
+    NR_OF_NEURONS = 5
+    MOTHER_PROCESS_CONN_ENDS = []
+    LIAF_NEURONS = []
+    for i in range(NR_OF_NEURONS):
+        pa, c = mp.Pipe()
+        MOTHER_PROCESS_CONN_ENDS.append(pa)
+        LIAF_NEURONS.append(LeakyIntegrateAndFireNeuron(Id=i, neuron_params=neuronParams, simulation_time=SIMULATION_TIME, to_siblings_conns=[], from_siblings_conns=[], main_conn=c))
+
+    # Define connections so they are in a ring - 1 layer for now 
+    for i in range(NR_OF_NEURONS):
+        for j in range(NR_OF_NEURONS):
+            if i != j:
+                end1, end2 = mp.Pipe()
+                LIAF_NEURONS[i].to_siblings_conns.append(end1)
+                LIAF_NEURONS[j].from_siblings_conns.append(end2)
+
+    
