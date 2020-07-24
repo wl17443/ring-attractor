@@ -28,11 +28,13 @@ for i in range(NR_OF_NEURONS):
 # plt.matshow(connectivity)
 # plt.show()
 
-T = 1
+T = 0.5
 dt = 0.25*ms
 t = np.linspace(0,T,int(T/dt)+1)
 
 SPIKE_TRAINS = np.zeros((NR_OF_NEURONS, len(t)))
+LAST_SPIKE = np.zeros(NR_OF_NEURONS)
+LAST_SPIKE[:] = -100 
 
 # Neuron parameters 
 v_thresh = -48*mV
@@ -48,44 +50,38 @@ T_m = 20*ms
 k_ex = 1/(T_syn_ex*np.exp(-1))
 k_in = 1/(T_syn_in*np.exp(-1))
 
-def I_syn_ex(V_m,t):
-    return G_ex(t)*(V_m-E_rev_ex)
+def I_syn_ex(V_m, neuron, t):
+    return G_ex(neuron, t)*(V_m-E_rev_ex)
 
-def I_syn_in(V_m,t):
-    return G_in(t)*(V_m-E_rev_in)
+def I_syn_in(V_m, neuron, t):
+    return G_in(neuron, t)*(V_m-E_rev_in)
 
 def I_leak(V_m):
     return (C_m*(V_m-V_rest))/T_m
 
-def G_ex(t):
-    return k_ex*t*np.exp(-t/T_syn_ex)
+def G_ex(neuron, t):
+    return k_ex*t*dt*np.exp(-t*dt/T_syn_ex)
 
-def G_in(t):
-    return k_in*t*np.exp(-t/T_syn_in)
+def G_in(neuron, t):
+    return k_in*t*dt*np.exp(-t*dt/T_syn_in)
 
 def f(I_leak, I_syn, I_ext):
     return (-I_leak-I_syn+I_ext)/C_m
 
 def I_syn(neuron, V_m, t):
     sum = 0 
-    for connected in connectivity[neuron]:
-        if connected == 1:
-            sum += I_syn_ex(V_m, t)
-        elif connected == -1:
-            sum += I_syn_in(V_m, t)
+    for connected in range(len(connectivity[neuron])):
+        if connectivity[neuron, connected] == 1:
+            sum += I_syn_ex(V_m, connected, t)
+        elif connectivity[neuron, connected] == -1:
+            sum += I_syn_in(V_m, connected, t)
     return sum 
 
-# TODO model input current as a function of time - sinusoidal 
-r_avg = 20*Hz
-# Degree of correlation
-B = 15*Hz 
-freq = 20*Hz
-def r(t):
-    # if rnd.random() < (r_avg+B*np.sin(2*np.pi*freq*t))*dt:
-    #     return 40*nA
-    # else: 
-    #     return 0 
-    return 1*nA
+def r(neuron):
+    if neuron%5==0:
+        return 1*nA
+    else:
+        return 0 
 
 def simulate():
     SPIKE_TRAINS[:,0] = V_rest
@@ -100,8 +96,9 @@ def simulate():
                 SPIKE_TRAINS[neuron,time-1] = 0 
                 SPIKE_TRAINS[neuron,time] = V_reset
                 REFRACTORY_TIMES[neuron] = T_refract
+                LAST_SPIKE[neuron] = time-1
             else:
-                SPIKE_TRAINS[neuron,time] = SPIKE_TRAINS[neuron,time-1] + f(I_leak(SPIKE_TRAINS[neuron,time-1]), I_syn(neuron, SPIKE_TRAINS[neuron,time-1], time), I_ext=r(time))*dt
+                SPIKE_TRAINS[neuron,time] = SPIKE_TRAINS[neuron,time-1] + f(I_leak(SPIKE_TRAINS[neuron,time-1]), I_syn(neuron, SPIKE_TRAINS[neuron,time-1], time-1), I_ext=r(neuron))*dt
 
 if __name__ == "__main__":
     simulate()
