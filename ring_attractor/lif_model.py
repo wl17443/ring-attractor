@@ -21,69 +21,78 @@ class lif:
 
     def __init__(self, ID):
         self.id = ID
-        self.Is_exc = 0.0  # Synpatic Current
-        self.Is_inh = 0.0  # Synpatic Current
-        self.Il = 0.0  # Leakeage current
         self.Iext = 0.0
         self.V = self.Vr  # Membrane potential, set at reset
         self.dt = 1 * ms
-        self.ts = 1
+        self.time_from_spike = 1
         self.kexc = 1 / (self.tau_syn_exc * exp(-1))
         self.kinh = 1 / (self.tau_syn_inh * exp(-1))
 
-        self.synapses = {}  # neuron: weight
-        self.abc = {-1: [], 1: []}
+        self.synapses = {}  # outgoing synapses, {neuron: weight}
+        self.inh_ps_td = [] # exc pre-synaptic time delays from last spike, [(time_delay, weight), (time_delay, weight) ...]
+        self.exc_ps_td = [] 
 
     def step(self):
 
+        # If spiked, hyperpolarize
         if self.V == 0.0:
             self.V = self.Vr
-            return
 
-        self._updateCurrents()
-        self._updatePotential()
-        self._injectCurrents()
-        self._check_depolarize()
-
-        self.ts += self.dt
-
-    def _updatePotential(self):
-        if self.ts > self.tau_ref:
-            self.V += (-self.Il - self.Is_inh - self.Is_exc +
-                       self.Iext) / self.Cm * self.dt
-
-
-    def _check_depolarize(self):
-        if self.V >= self.Vthr:
+        # If above threshold, depolarize
+        elif self.V >= self.Vthr:
             self.V = 0.0
-            self.ts = 0
+            self.time_from_spike = 0
+        
+        # Else, update Current with Euler
+        else:
+            self.V += self.dV() * self.dt
+
+
+        # Send time delays to connected neurons
+        for neuron, weight in self.synapses.items():
+            if weight < 0:
+                neuron.inh_ps_td.append((self.time_from_spike, weight))
+            if weight > 0:
+                neuron.exc_ps_td.append((self.time_from_spike, weight))
+
+        self.time_from_spike += self.dt
+        
+        # Reset time delays
+        self.inh_ps_td.clear
+        self.exc_ps_td.clear
+
+    def dV(self):
+        return  (-self.Il() - self.Is_inh() - self.Is_exc() +
+                   self.Iext) / self.Cm 
+
+
+    def Il(self):
+        return self.Cm/self.tau_m * (self.V - self.El)
+
+
+    def Is_inh(self):
+        I = 0
+        if self.time_from_spike > self.tau_ref:
+            for td, w in self.inh_ps_td:
+                Is = self.Ginh(td) * (self.V - self.Einh)
+                Is *= w 
+                I += Is 
+
+        return I
+                
+    def Is_exc(self):
+        I = 0
+        if self.time_from_spike > self.tau_ref:
+            for td, w in self.exc_ps_td:
+                Is = self.Gexc(td) * (self.V - self.Eexc)
+                Is *= w 
+                I += Is 
+
+        return I
+
 
     def Gexc(self, t):
         return self.kexc * t * exp(-t/self.tau_syn_exc)
 
     def Ginh(self, t):
         return self.kinh * t * exp(-t/self.tau_syn_inh)
-
-    def _updateCurrents(self):
-        self.Il = self.Cm/self.tau_m * (self.V - self.El)
-
-        self.Is_inh = 0 
-        self.Is_exc = 0
-        if self.ts > self.tau_ref:
-            for w, times in self.abc.items():
-                if w == -1 :
-                    for ts in times:
-                        self.Is_inh -= self.Ginh(ts) * (self.V - self.Einh)
-
-                if w == 1:
-                    for ts in times:
-                        self.Is_exc += self.Gexc(ts) * (self.V - self.Eexc)
-
-        self.abc = {-1: [], 1: []}
-
-
-    def _injectCurrents(self):
-        for neuron, weight in self.synapses.items():
-            if weight != 0:
-                neuron.abc[int(weight)].append(self.ts)
-

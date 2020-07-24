@@ -1,19 +1,12 @@
 import numpy as np
+import pandas as pd
 import matplotlib.pyplot as plt
 from lif_model import lif
-from utils import make_connectivity_matrix, connect_neurons
-import pandas as pd
-from scipy import signal
 
 time = 1000
 n = 20
 
 neurons = [lif(ID) for ID in range(n)]
-# weights = signal.ricker(n, 4.0)
-weights = [0, 1, 1, -1, -1, -1, -1, *[0 for _ in range(n-7)]]
-
-# cv = make_connectivity_matrix(weights, n)
-# connect_neurons(cv, neurons, n)
 
 for neur in neurons:
     for i in range(1, 3):
@@ -25,12 +18,13 @@ for neur in neurons:
         neur.synapses[neurons[neur.id - i]] = -1
 
 
+
 potentials = [[] for _ in range(n)]
 for t in range(time):
     for neuron in neurons:
         if neuron.id == 0:
             if t < 200:
-                neuron.Iext = 1.9 * 1e-9
+                neuron.Iext = 1.5 * 1e-9
             if t > 200:
                 neuron.Iext = 0
 
@@ -39,6 +33,7 @@ for t in range(time):
         potentials[neuron.id].append(neuron.V)
 
 
+# Plots
 fig, axes = plt.subplots(n, 1, figsize=(10, 10))
 
 for i, ax in enumerate(axes):
