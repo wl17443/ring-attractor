@@ -4,23 +4,24 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 from lif_model import LIF
 
-time = 300
+time = 1000
 n = 100
-w = 0.08
+ew = 0.06
+iw = 0.10
 dt = 1
-spike_source = [c for c in range(30,41)]
+spike_source = [c for c in range(30,32)]
 
 neurons = [LIF(ID, dt=dt) for ID in range(n)]
 
 
 for neur in neurons:
     for i in range(1, 3):
-        neur.synapses["exc"][neurons[(neur.id + i) % n]] = w
-        neur.synapses["exc"][neurons[neur.id - i]] = w
+        neur.synapses["exc"][neurons[(neur.id + i) % n]] = ew
+        neur.synapses["exc"][neurons[neur.id - i]] = ew
 
     for i in range(3, 7):
-        neur.synapses["inh"][neurons[(neur.id + i) % n]] = w
-        neur.synapses["inh"][neurons[neur.id - i]] = w
+        neur.synapses["inh"][neurons[(neur.id + i) % n]] = iw
+        neur.synapses["inh"][neurons[neur.id - i]] = iw
 
 
 potentials = [[] for _ in range(n)]
@@ -28,7 +29,7 @@ for t in range(int(time / dt)):
     for neuron in neurons:
 
         if neuron.id in spike_source:
-            neuron.exc_ps_td.append((t * 1e-3, w))
+            neuron.exc_ps_td.append((t * 1e-3, ew))
 
         
         neuron.step()

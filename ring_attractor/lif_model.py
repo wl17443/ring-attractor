@@ -45,6 +45,9 @@ class LIF:
             self.V = 0.0
             self.time_from_spike = 0
 
+        # elif self.time_from_spike > self.tau_ref:
+        #     pass
+
         # Else, update Current with Euler
         else:
             self.V += self.dV() * self.dt
@@ -69,17 +72,22 @@ class LIF:
         return self.Cm / self.tau_m * (self.V - self.El)
 
     def Is_inh(self):
-        I = 0
+        I = 0.0
         for td, w in self.inh_ps_td:
-            I += (self.Ginh(td) * (self.V - self.Einh)) * w
+            I += (self.Ginh(td) * (self.V - self.Einh)) * w * 1e-6
 
+
+        if self.id == 28:
+            print(I/self.Cm, "inh")
         return I
 
     def Is_exc(self):
-        I = 0
+        I = 0.0
         for td, w in self.exc_ps_td:
-            I += (self.Gexc(td) * (self.V - self.Eexc)) * w
+            I += (self.Gexc(td) * (self.V - self.Eexc)) * w * 1e-6
 
+        if self.id == 29:
+            print(I/self.Cm)
         return I
 
     def Gexc(self, t):
