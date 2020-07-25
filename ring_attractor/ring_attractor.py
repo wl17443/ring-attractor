@@ -15,12 +15,12 @@ neurons = [LIF(ID, dt=dt) for ID in range(n)]
 
 for neur in neurons:
     for i in range(1, 3):
-        neur.synapses[neurons[(neur.id + i) % n]] = w
-        neur.synapses[neurons[neur.id - i]] = w
+        neur.synapses["exc"][neurons[(neur.id + i) % n]] = w
+        neur.synapses["exc"][neurons[neur.id - i]] = w
 
     for i in range(3, 7):
-        neur.synapses[neurons[(neur.id + i) % n]] = -w
-        neur.synapses[neurons[neur.id - i]] = -w
+        neur.synapses["inh"][neurons[(neur.id + i) % n]] = w
+        neur.synapses["inh"][neurons[neur.id - i]] = w
 
 
 potentials = [[] for _ in range(n)]
@@ -37,8 +37,13 @@ for t in range(int(time / dt)):
 
 
 # Plots
-fig, ax = plt.subplots(figsize=(10, 10))
+fig = plt.figure(figsize=(10,10))
+
 df = pd.DataFrame(potentials)
-sns.heatmap(df, vmin=-0.08, vmax=0.0, cmap="viridis")
+sns.heatmap(df, vmin=-0.08, vmax=0.0, cmap="viridis", xticklabels=int(time/10), yticklabels=5, cbar_kws={'label':"Membrane Potential (V)"})
+plt.xlabel("Time (ms)")
+plt.ylabel("# of neuron")
+plt.subplots_adjust(left=0.07, bottom=0.07, right=0.97, top=0.95)
+
 plt.show()
 

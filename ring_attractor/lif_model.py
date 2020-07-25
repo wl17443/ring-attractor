@@ -29,7 +29,7 @@ class LIF:
         self.kexc = 1 / (self.tau_syn_exc * exp(-1))
         self.kinh = 1 / (self.tau_syn_inh * exp(-1))
 
-        self.synapses = {}  # outgoing synapses, {neuron: weight}
+        self.synapses = {"inh":{}, "exc":{}}  # outgoing synapses, {neuron: weight}
         # exc and inh pre-synaptic time delays from last spike, [(time_delay, weight), (...)]
         self.inh_ps_td = []
         self.exc_ps_td = []
@@ -50,11 +50,11 @@ class LIF:
             self.V += self.dV() * self.dt
 
         # Send time delays to connected neurons
-        for neuron, weight in self.synapses.items():
-            if weight < 0:
-                neuron.inh_ps_td.append((self.time_from_spike, weight))
-            if weight > 0:
-                neuron.exc_ps_td.append((self.time_from_spike, weight))
+        if self.time_from_spike > self.tau_ref:
+            for neuron, weight in self.synapses["inh"].items():
+                    neuron.inh_ps_td.append((self.time_from_spike, weight))
+            for neuron, weight in self.synapses["exc"].items():
+                    neuron.exc_ps_td.append((self.time_from_spike, weight))
 
         self.time_from_spike += self.dt
 
@@ -63,29 +63,26 @@ class LIF:
         self.exc_ps_td.clear()
 
     def dV(self):
-        return (-self.Il() - self.Is_inh() - self.Is_exc() +
-                self.Iext) / self.Cm
+        return (-self.Il() - self.Is_inh() - self.Is_exc()) / self.Cm
 
     def Il(self):
         return self.Cm / self.tau_m * (self.V - self.El)
 
     def Is_inh(self):
         I = 0
-        if self.time_from_spike > self.tau_ref:
-            for td, w in self.inh_ps_td:
-                Is = self.Ginh(td) * (self.V - self.Einh)
-                Is *= w
-                I += Is
+        for td, w in self.inh_ps_td:
+            Is = self.Ginh(td) * (self.V - self.Einh)
+            Is *= w
+            I += Is
 
         return I
 
     def Is_exc(self):
         I = 0
-        if self.time_from_spike > self.tau_ref:
-            for td, w in self.exc_ps_td:
-                Is = self.Gexc(td) * (self.V - self.Eexc)
-                Is *= w
-                I += Is
+        for td, w in self.exc_ps_td:
+            Is = self.Gexc(td) * (self.V - self.Eexc)
+            Is *= w
+            I += Is
 
         return I
 
