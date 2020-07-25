@@ -71,18 +71,14 @@ class LIF:
     def Is_inh(self):
         I = 0
         for td, w in self.inh_ps_td:
-            Is = self.Ginh(td) * (self.V - self.Einh)
-            Is *= w
-            I += Is
+            I += (self.Ginh(td) * (self.V - self.Einh)) * w
 
         return I
 
     def Is_exc(self):
         I = 0
         for td, w in self.exc_ps_td:
-            Is = self.Gexc(td) * (self.V - self.Eexc)
-            Is *= w
-            I += Is
+            I += (self.Gexc(td) * (self.V - self.Eexc)) * w
 
         return I
 
