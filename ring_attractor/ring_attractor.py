@@ -7,9 +7,10 @@ from lif_model import LIF
 time = 300
 n = 100
 w = 0.08
+dt = 1
 spike_source = [c for c in range(30,41)]
 
-neurons = [LIF(ID, dt=0.25) for ID in range(n)]
+neurons = [LIF(ID, dt=dt) for ID in range(n)]
 
 
 for neur in neurons:
@@ -23,7 +24,7 @@ for neur in neurons:
 
 
 potentials = [[] for _ in range(n)]
-for t in range(time):
+for t in range(int(time / dt)):
     for neuron in neurons:
 
         if neuron.id in spike_source:
