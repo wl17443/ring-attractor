@@ -77,8 +77,6 @@ class LIF:
             I += (self.Ginh(td) * (self.V - self.Einh)) * w * 1e-6
 
 
-        if self.id == 28:
-            print(I/self.Cm, "inh")
         return I
 
     def Is_exc(self):
@@ -86,8 +84,6 @@ class LIF:
         for td, w in self.exc_ps_td:
             I += (self.Gexc(td) * (self.V - self.Eexc)) * w * 1e-6
 
-        if self.id == 29:
-            print(I/self.Cm)
         return I
 
     def Gexc(self, t):
