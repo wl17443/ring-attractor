@@ -2,12 +2,12 @@ import numpy as np
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
+from connect import connect_with_fixed_points
 from lif_model import LIF
 
 time = 300
 n = 100
-ew = 0.06
-iw = 0.10
+weights = [0.06, 0.10, 0.06, 0.15] # inh weight, exc weight, fixed point inh, fixed point exc
 dt = 1
 spike_source = [c for c in range(40, 41)]
 # spike_source2 = [c for c in range(70,80)]
@@ -15,13 +15,7 @@ spike_source = [c for c in range(40, 41)]
 neurons = [LIF(ID, dt=dt, noise_mean=1e-11, noise_std=5e-10) for ID in range(n)]
 
 
-for neur in neurons:
-    for i in range(3, 7):
-        neur.synapses["inh"][neurons[(neur.id + i) % n]] = iw
-        neur.synapses["inh"][neurons[neur.id - i]] = iw
-    for i in range(1, 3):
-        neur.synapses["exc"][neurons[(neur.id + i) % n]] = ew
-        neur.synapses["exc"][neurons[neur.id - i]] = ew
+connect_with_fixed_points(neurons, n, weights)
 
 
 
@@ -30,7 +24,7 @@ for t in range(time):
     for neuron in neurons:
 
         if neuron.id in spike_source:
-            neuron.exc_ps_td.append((t * 1e-3, ew))
+            neuron.exc_ps_td.append((t * 1e-3, weights[0]))
 
 # if t > 100:
         #     if neuron.id in spike_source2:
