@@ -10,6 +10,8 @@ EXC = 2
 INH = 6
 # Defining the connectivity using a 2-4 topology 
 connectivity = np.zeros((NR_OF_NEURONS,NR_OF_NEURONS))
+g_synapses = np.zeros((NR_OF_NEURONS,NR_OF_NEURONS))
+
 for i in range(NR_OF_NEURONS):
     for j in range(i-INH, i+INH+1):
         if i!=j:
@@ -47,23 +49,33 @@ E_rev_in = -70*mV
 T_syn_ex = T_syn_in = 5*ms
 T_m = 20*ms
 # This needs changing to a learning rule 
-k_ex = 1/(T_syn_ex*np.exp(-1))
-k_in = 1/(T_syn_in*np.exp(-1))
+# k_ex = 1/(T_syn_ex*np.exp(-1))
+# k_in = 1/(T_syn_in*np.exp(-1))
 
-def I_syn_ex(V_m, neuron, t):
-    return G_ex(neuron, t)*(V_m-E_rev_ex)
+def I_syn_ex(V_m, neuron, connected, t):
+    return G_ex(neuron, connected, t)*(V_m-E_rev_ex)
 
-def I_syn_in(V_m, neuron, t):
-    return G_in(neuron, t)*(V_m-E_rev_in)
+def I_syn_in(V_m, neuron, connected, t):
+    return G_in(neuron, connected, t)*(V_m-E_rev_in)
 
 def I_leak(V_m):
     return (C_m*(V_m-V_rest))/T_m
 
-def G_ex(neuron, t):
-    return k_ex*t*dt*np.exp(-t*dt/T_syn_ex)
+def G_ex(neuron, connected, t):
+    temp = g_synapses[neuron, connected]
+    temp = -temp/T_syn_ex
+    if t-LAST_SPIKE[connected] == 0:
+        temp += 1
+    g_synapses[neuron, connected] += temp*dt
+    return g_synapses[neuron, connected]  
 
-def G_in(neuron, t):
-    return k_in*t*dt*np.exp(-t*dt/T_syn_in)
+def G_in(neuron, connected, t):
+    temp = g_synapses[neuron, connected]
+    temp = -temp/T_syn_ex
+    if t-LAST_SPIKE[connected] == 0:
+        temp += 1
+    g_synapses[neuron, connected] += temp*dt 
+    return g_synapses[neuron, connected] 
 
 def f(I_leak, I_syn, I_ext):
     return (-I_leak-I_syn+I_ext)/C_m
@@ -72,9 +84,9 @@ def I_syn(neuron, V_m, t):
     sum = 0 
     for connected in range(len(connectivity[neuron])):
         if connectivity[neuron, connected] == 1:
-            sum += I_syn_ex(V_m, connected, t)
+            sum += I_syn_ex(V_m, neuron, connected, t)
         elif connectivity[neuron, connected] == -1:
-            sum += I_syn_in(V_m, connected, t)
+            sum += I_syn_in(V_m, neuron, connected, t)
     return sum 
 
 def r(neuron):
@@ -106,3 +118,4 @@ if __name__ == "__main__":
     for i in range(NR_OF_NEURONS):
         axs[i].plot(t,SPIKE_TRAINS[i]) 
     plt.show()
+    print(g_synapses)
