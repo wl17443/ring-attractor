@@ -19,7 +19,7 @@ def connect_with_fixed_points(neurons, n, weights, fp_n = 20):
             fixed_neurons.append(neur)
 
     for neur in neurons:
-        for i in range(3, 7):
+        for i in range(3, int(n-1)):
             neur.synapses["inh"][neurons[(neur.id + i) % n]] = weights[1]
             neur.synapses["inh"][neurons[neur.id - i]] = weights[1]
         for i in range(1, 3):
@@ -28,12 +28,14 @@ def connect_with_fixed_points(neurons, n, weights, fp_n = 20):
 
 
     for neur in fixed_neurons:
-        for i in range(3, 7):
+        for i in range(3, int(n-1)):
             neur.synapses["inh"][neurons[(neur.id + i) % n]] = weights[3]
             neur.synapses["inh"][neurons[neur.id - i]] = weights[3]
         for i in range(1, 3):
             neur.synapses["exc"][neurons[(neur.id + i) % n]] = weights[2]
             neur.synapses["exc"][neurons[neur.id - i]] = weights[2]
+
+    return fp_idx
 
 
 
@@ -57,5 +59,5 @@ if __name__ == "__main__":
 
 
     fig = plt.figure(figsize=(10,10))
-    sns.heatmap(conn)
+    sns.heatmap(conn, cmap="viridis") 
     plt.show()
