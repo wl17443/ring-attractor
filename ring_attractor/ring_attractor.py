@@ -12,7 +12,7 @@ dt = 1
 spike_source = [c for c in range(40, 41)]
 # spike_source2 = [c for c in range(70,80)]
 
-neurons = [LIF(ID, dt=dt, noise_mean=0, noise_std=5e-10) for ID in range(n)]
+neurons = [LIF(ID, dt=dt, noise_mean=1e-11, noise_std=5e-10) for ID in range(n)]
 
 
 for neur in neurons:
