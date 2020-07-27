@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
+from datetime import datetime
 from connect import connect_with_fixed_points
 from lif_model import LIF
 
@@ -61,5 +62,5 @@ for i, l in enumerate(labels):
 ax.set_yticklabels(labels)
 
 
+plt.savefig(f"images/{datetime.now().strftime('%d-%m-%Y, %H:%M:%S')}.png")
 plt.show()
-
