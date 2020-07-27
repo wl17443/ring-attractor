@@ -1,4 +1,5 @@
 from numpy import exp
+from numpy.random import normal
 
 mV = 1e-3
 nF = 1e-9
@@ -20,7 +21,7 @@ class LIF:
     El = -70.0 * mV  # Leaky reversal potential
     Vr = -80.0 * mV  # Reset potential
 
-    def __init__(self, ID, dt=1):
+    def __init__(self, ID, dt=1, noise_mean=0, noise_std=1):
         self.id = ID
         self.Iext = 0.0
         self.V = self.Vr  # Membrane potential, set at reset
@@ -33,6 +34,9 @@ class LIF:
         # exc and inh pre-synaptic time delays from last spike, [(time_delay, weight), (...)]
         self.inh_ps_td = []
         self.exc_ps_td = []
+
+        self.noise_mean = noise_mean
+        self.noise_std = noise_std
 
     def step(self):
 
@@ -69,12 +73,12 @@ class LIF:
         return (-self.Il() - self.Is_inh() - self.Is_exc()) / self.Cm
 
     def Il(self):
-        return self.Cm / self.tau_m * (self.V - self.El)
+        return self.Cm / self.tau_m * (self.V - self.El) + self.noise()
 
     def Is_inh(self):
         I = 0.0
         for td, w in self.inh_ps_td:
-            I += (self.Ginh(td) * (self.V - self.Einh)) * w * 1e-6
+            I += (self.Ginh(td) * (self.V - self.Einh)) * w * 1e-6 + self.noise()
 
 
         return I
@@ -82,7 +86,7 @@ class LIF:
     def Is_exc(self):
         I = 0.0
         for td, w in self.exc_ps_td:
-            I += (self.Gexc(td) * (self.V - self.Eexc)) * w * 1e-6
+            I += (self.Gexc(td) * (self.V - self.Eexc)) * w * 1e-6 + self.noise()
 
         return I
 
@@ -91,3 +95,6 @@ class LIF:
 
     def Ginh(self, t):
         return self.kinh * t * exp(-t/self.tau_syn_inh)
+
+    def noise(self):
+        return normal(self.noise_mean, self.noise_std)
