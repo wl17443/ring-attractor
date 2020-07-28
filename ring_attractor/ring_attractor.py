@@ -17,16 +17,17 @@ from datetime import datetime
 from connect import connect_with_fixed_points
 from lif_model import LIF
 
-time = 300
+time = 600
 n = 128
-weights = [0.022, 0.1, 0.030, 0.1]  # ext, inh, fp ext, inh
+weights = [0.025, 0.05, 0.090, 0.3]  # ext, inh, fp ext, inh
 dt = 1
-spike_source = [c for c in range(38, 43)]
+spike_source = [c for c in range(40, 45)]
 
-neurons = [LIF(ID, dt=dt, noise_mean=0, noise_std=2.2e-3) for ID in range(n)]
+neurons = [LIF(ID, dt=dt, noise_mean=0, noise_std=0e-3) for ID in range(n)]
 
 
-fixed_points = connect_with_fixed_points(neurons, n, weights, fp_n=16)
+fixed_points = connect_with_fixed_points(neurons, n, weights, fp_n=8)
+print(fixed_points)
 
 def input_source(indexes, n_of_spikes, begin_time, neuron, time):
         if time > begin_time:
@@ -39,7 +40,7 @@ potentials = [[] for _ in range(n)]
 for t in range(time):
     for neuron in neurons:
 
-        input_source(spike_source, 4, 0, neuron, t)
+        input_source(spike_source, 5, 0, neuron, t)
 
         neuron.step()
 
