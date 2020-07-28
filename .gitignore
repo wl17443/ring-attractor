@@ -2,5 +2,4 @@ bad_ring_attractor/
 simple_neurons/
 __pycache__/
 **/__pycache__/
-ring_attractor/prova.py
-ring_attractor/snip.py
+ring_attractor/images
