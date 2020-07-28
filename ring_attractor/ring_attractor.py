@@ -19,7 +19,7 @@ from lif_model import LIF
 
 time = 300
 n = 128
-weights = [0.025, 0.1, 0.030, 0.1]  # ext, inh, fp ext, inh
+weights = [0.022, 0.1, 0.030, 0.1]  # ext, inh, fp ext, inh
 dt = 1
 spike_source = [c for c in range(38, 43)]
 
