@@ -53,5 +53,23 @@ for i, l in enumerate(labels):
 ax.set_yticklabels(labels)
 
 
+spikes = df == 0.0
+spikes = spikes.astype(int)
+for i in range(n):
+    spikes.loc[i] = spikes.loc[i] * i
+
+medians = []
+for i in range(n):
+    medians.append(spikes[i].loc[spikes[i] != 0.0].median())
+
+
+medians = pd.Series(medians).dropna()
+mean_of_medians = np.mean(medians)
+var_of_medians = np.var(medians)
+
+print(mean_of_medians, var_of_medians)
+
+    
+
 plt.savefig(f"images/{datetime.now().strftime('%d-%m-%Y, %H:%M:%S')}.png")
 plt.show()
