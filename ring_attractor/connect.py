@@ -30,21 +30,27 @@ def connect_with_fixed_points(neurons, n, weights, fp_n = 20):
 
     for neur in neurons:
         if neur not in fixed_neurons:
-            for i in range(5, 12):
-                neur.synapses["inh"][neurons[(neur.id + i) % n]] = weights[1]*np.exp((-i+5)/12)
-                neur.synapses["inh"][neurons[neur.id - i]] = weights[1]*np.exp((-i+5)/12)
+            for i in range(9, 12):
+                neur.synapses["inh"][neurons[(neur.id + i) % n]] = weights[1]*np.exp(-0.5-(i-9)/4)*1.5
+                neur.synapses["inh"][neurons[neur.id - i]] = weights[1]*np.exp(-0.5-(i-9)/4)*1.5
+            for i in range(5, 8):
+                neur.synapses["inh"][neurons[(neur.id + i) % n]] = weights[1]*np.log(2+(i-5)/3)*1.5
+                neur.synapses["inh"][neurons[neur.id - i]] = weights[1]*np.log(2+(i-5)/3)*1.5
             for i in range(1, 5):
-                neur.synapses["exc"][neurons[(neur.id + i) % n]] = weights[0]*np.exp((-i)/5)
-                neur.synapses["exc"][neurons[neur.id - i]] = weights[0]*np.exp((-i)/5)
+                neur.synapses["exc"][neurons[(neur.id + i) % n]] = weights[0]*np.log(2-(i)/5)*1.5
+                neur.synapses["exc"][neurons[neur.id - i]] = weights[0]*np.log(2-(i)/5)*1.5
 
 
     for neur in fixed_neurons:
-        for i in range(5, 12):
-            neur.synapses["inh"][neurons[(neur.id + i) % n]] = weights[3]*np.exp((-i+5)/12)
-            neur.synapses["inh"][neurons[neur.id - i]] = weights[3]*np.exp((-i+5)/12)
+        for i in range(9, 12):
+                neur.synapses["inh"][neurons[(neur.id + i) % n]] = weights[3]*np.exp(-0.5-(i-9)/4)*1.5
+                neur.synapses["inh"][neurons[neur.id - i]] = weights[3]*np.exp(-0.5-(i-9)/4)*1.5
+        for i in range(5, 8):
+            neur.synapses["inh"][neurons[(neur.id + i) % n]] = weights[3]*np.log(2+(i-5)/3)*1.5
+            neur.synapses["inh"][neurons[neur.id - i]] = weights[3]*np.log(2+(i-5)/3)*1.5
         for i in range(1, 5):
-            neur.synapses["exc"][neurons[(neur.id + i) % n]] = weights[2]*np.exp((-i)/5)
-            neur.synapses["exc"][neurons[neur.id - i]] = weights[2]*np.exp((-i)/5)
+            neur.synapses["exc"][neurons[(neur.id + i) % n]] = weights[2]*np.log(2-(i)/5)*1.5
+            neur.synapses["exc"][neurons[neur.id - i]] = weights[2]*np.log(2-(i)/5)*1.5
 
     return fp_idx
 
