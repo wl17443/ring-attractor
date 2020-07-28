@@ -54,7 +54,7 @@ class LIF:
 
         # Else, update Current with Euler
         else:
-            self.V += self.dV() * self.dt
+            self.V += self.dV() * self.dt  + self.noise()
 
         # Send time delays to connected neurons
         if self.time_from_spike > self.tau_ref:
@@ -73,12 +73,12 @@ class LIF:
         return (-self.Il() - self.Is_inh() - self.Is_exc()) / self.Cm
 
     def Il(self):
-        return self.Cm / self.tau_m * (self.V - self.El) + self.noise()
+        return self.Cm / self.tau_m * (self.V - self.El)
 
     def Is_inh(self):
         I = 0.0
         for td, w in self.inh_ps_td:
-            I += (self.Ginh(td) * (self.V - self.Einh)) * w * 1e-6 + self.noise()
+            I += (self.Ginh(td) * (self.V - self.Einh)) * w * 1e-6
 
 
         return I
@@ -86,7 +86,7 @@ class LIF:
     def Is_exc(self):
         I = 0.0
         for td, w in self.exc_ps_td:
-            I += (self.Gexc(td) * (self.V - self.Eexc)) * w * 1e-6 + self.noise()
+            I += (self.Gexc(td) * (self.V - self.Eexc)) * w * 1e-6
 
         return I
 

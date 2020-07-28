@@ -7,37 +7,28 @@ from connect import connect_with_fixed_points
 from lif_model import LIF
 
 time = 300
-n = 100
-weights = [0.06, 0.10, 0.12, 0.20] # inh weight, exc weight, fixed point inh, fixed point exc
+n = 128
+weights = [0.03, 0.10, 0.03, 0.10] # inh weight, exc weight, fixed point inh, fixed point exc
 dt = 1
-spike_source = [c for c in range(40, 45)]
-# spike_source2 = [c for c in range(70,80)]
+spike_source = [c for c in range(38, 43)]
 
-neurons = [LIF(ID, dt=dt, noise_mean=0, noise_std=6e-10) for ID in range(n)]
+neurons = [LIF(ID, dt=dt, noise_mean=0, noise_std=0e-4) for ID in range(n)]
 
 
-fixed_points = connect_with_fixed_points(neurons, n, weights)
+fixed_points = connect_with_fixed_points(neurons, n, weights, fp_n=2)
 
+def input_source(indexes, n_of_spikes, begin_time, neuron, time):
+        if time > begin_time:
+            if neuron.id in indexes:
+                for _ in range(n_of_spikes):
+                    neuron.exc_ps_td.append(((t - begin_time) *  1e-3, weights[0]))
 
 
 potentials = [[] for _ in range(n)]
 for t in range(time):
     for neuron in neurons:
 
-        if neuron.id in spike_source:
-            for _ in range(1):
-                neuron.exc_ps_td.append((t * 1e-3, weights[0]))
-
-# if t > 100:
-        #     if neuron.id in spike_source2:
-        #         for _ in range(5):
-        #             neuron.exc_ps_td.append(((t - 100) *  1e-3, ew))
-        
-        # if t > 200:
-        #     if neuron.id in spike_source:
-        #         for _ in range(5):
-        #             neuron.exc_ps_td.append(((t - 200) * 1e-3, ew))
-
+        input_source(spike_source, 2, 0, neuron, t)
 
         neuron.step()
 
