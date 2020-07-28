@@ -8,14 +8,14 @@ from lif_model import LIF
 
 time = 300
 n = 128
-weights = [0.03, 0.10, 0.03, 0.10] # inh weight, exc weight, fixed point inh, fixed point exc
+weights = [0.018, 0.08, 0.025, 0.08]  # ext, inh, fp ext, inh
 dt = 1
 spike_source = [c for c in range(38, 43)]
 
-neurons = [LIF(ID, dt=dt, noise_mean=0, noise_std=0e-4) for ID in range(n)]
+neurons = [LIF(ID, dt=dt, noise_mean=0, noise_std=0) for ID in range(n)]
 
 
-fixed_points = connect_with_fixed_points(neurons, n, weights, fp_n=2)
+fixed_points = connect_with_fixed_points(neurons, n, weights, fp_n=0)
 
 def input_source(indexes, n_of_spikes, begin_time, neuron, time):
         if time > begin_time:
@@ -28,7 +28,7 @@ potentials = [[] for _ in range(n)]
 for t in range(time):
     for neuron in neurons:
 
-        input_source(spike_source, 2, 0, neuron, t)
+        input_source(spike_source, 4, 0, neuron, t)
 
         neuron.step()
 

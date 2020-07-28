@@ -8,9 +8,10 @@ from lif_model import LIF
 
 def connect_with_fixed_points(neurons, n, weights, fp_n = 20):
     fp_idx = []
-    for i in range(n):
-        if i % fp_n == 0:
-            fp_idx.append(i)
+    if fp_n != 0:
+        for i in range(n):
+            if i % (n / fp_n) == 0:
+                fp_idx.append(i)
 
 
     fixed_neurons = []
@@ -20,19 +21,19 @@ def connect_with_fixed_points(neurons, n, weights, fp_n = 20):
 
     for neur in neurons:
         if neur not in fixed_neurons:
-            for i in range(3, 7):
+            for i in range(5, 12):
                 neur.synapses["inh"][neurons[(neur.id + i) % n]] = weights[1]
                 neur.synapses["inh"][neurons[neur.id - i]] = weights[1]
-            for i in range(1, 3):
+            for i in range(1, 5):
                 neur.synapses["exc"][neurons[(neur.id + i) % n]] = weights[0]
                 neur.synapses["exc"][neurons[neur.id - i]] = weights[0]
 
 
     for neur in fixed_neurons:
-        for i in range(3, 7):
+        for i in range(5, 12):
             neur.synapses["inh"][neurons[(neur.id + i) % n]] = weights[3]
             neur.synapses["inh"][neurons[neur.id - i]] = weights[3]
-        for i in range(1, 3):
+        for i in range(1, 5):
             neur.synapses["exc"][neurons[(neur.id + i) % n]] = weights[2]
             neur.synapses["exc"][neurons[neur.id - i]] = weights[2]
 
@@ -46,7 +47,7 @@ if __name__ == "__main__":
     weights = [1, -1, 5, -5]
     conn = np.zeros([n,n])
     neurons = [LIF(ID, dt=dt) for ID in range(n)]
-    connect_with_fixed_points(neurons, n, weights)
+    connect_with_fixed_points(neurons, n, weights, fp_n=0)
 
     for neur in neurons:
         for n, w in neur.synapses["inh"].items():
