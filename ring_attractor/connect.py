@@ -1,3 +1,12 @@
+
+import numpy as np
+import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
+from lif_model import LIF
+
+#   python C:\Users\Nikitas\Desktop\NEW\CODE\connect.py
+
 import numpy as np
 import pandas as pd
 import seaborn as sns
@@ -22,20 +31,20 @@ def connect_with_fixed_points(neurons, n, weights, fp_n = 20):
     for neur in neurons:
         if neur not in fixed_neurons:
             for i in range(5, 12):
-                neur.synapses["inh"][neurons[(neur.id + i) % n]] = weights[1]
-                neur.synapses["inh"][neurons[neur.id - i]] = weights[1]
+                neur.synapses["inh"][neurons[(neur.id + i) % n]] = weights[1]*np.exp((i-12)/12)
+                neur.synapses["inh"][neurons[neur.id - i]] = weights[1]*np.exp((i-12)/12)
             for i in range(1, 5):
-                neur.synapses["exc"][neurons[(neur.id + i) % n]] = weights[0]
-                neur.synapses["exc"][neurons[neur.id - i]] = weights[0]
+                neur.synapses["exc"][neurons[(neur.id + i) % n]] = weights[0]*np.exp((i-5)/5)
+                neur.synapses["exc"][neurons[neur.id - i]] = weights[0]*np.exp((i-5)/5)
 
 
     for neur in fixed_neurons:
         for i in range(5, 12):
-            neur.synapses["inh"][neurons[(neur.id + i) % n]] = weights[3]
-            neur.synapses["inh"][neurons[neur.id - i]] = weights[3]
+            neur.synapses["inh"][neurons[(neur.id + i) % n]] = weights[3]*np.exp((i-12)/12)
+            neur.synapses["inh"][neurons[neur.id - i]] = weights[3]*np.exp((i-12)/12)
         for i in range(1, 5):
-            neur.synapses["exc"][neurons[(neur.id + i) % n]] = weights[2]
-            neur.synapses["exc"][neurons[neur.id - i]] = weights[2]
+            neur.synapses["exc"][neurons[(neur.id + i) % n]] = weights[2]*np.exp((i-5)/5)
+            neur.synapses["exc"][neurons[neur.id - i]] = weights[2]*np.exp((i-5)/5)
 
     return fp_idx
 

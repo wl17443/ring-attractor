@@ -6,16 +6,27 @@ from datetime import datetime
 from connect import connect_with_fixed_points
 from lif_model import LIF
 
+
+#   python C:\Users\Nikitas\Desktop\NEW\CODE\ring_attractor.py
+
+import numpy as np
+import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
+from datetime import datetime
+from connect import connect_with_fixed_points
+from lif_model import LIF
+
 time = 300
 n = 128
-weights = [0.018, 0.08, 0.025, 0.08]  # ext, inh, fp ext, inh
+weights = [0.025, 0.1, 0.030, 0.1]  # ext, inh, fp ext, inh
 dt = 1
 spike_source = [c for c in range(38, 43)]
 
-neurons = [LIF(ID, dt=dt, noise_mean=0, noise_std=0) for ID in range(n)]
+neurons = [LIF(ID, dt=dt, noise_mean=0, noise_std=2.2e-3) for ID in range(n)]
 
 
-fixed_points = connect_with_fixed_points(neurons, n, weights, fp_n=0)
+fixed_points = connect_with_fixed_points(neurons, n, weights, fp_n=16)
 
 def input_source(indexes, n_of_spikes, begin_time, neuron, time):
         if time > begin_time:
@@ -53,5 +64,5 @@ for i, l in enumerate(labels):
 ax.set_yticklabels(labels)
 
 
-plt.savefig(f"images/{datetime.now().strftime('%d-%m-%Y, %H:%M:%S')}.png")
+plt.savefig(f"images/{datetime.now().strftime('%d-%m-%Y, %H-%M-%S')}.png")
 plt.show()
