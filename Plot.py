@@ -10,7 +10,7 @@ def plot_potentials(df, noise, weights, fixed_points, error, var_of_medians, tim
                 yticklabels=5, cbar_kws={'label': "Membrane Potential (V)"}, ax=ax)
     plt.xlabel("Time (ms)")
     plt.ylabel("# of neuron")
-    plt.subplots_adjust(left=0.07, bottom=0.07, right=0.97, top=0.90)
+    plt.subplots_adjust(left=0.07, bottom=0.07, right=0.97, top=0.89)
 
     labels = [item.get_text() for item in ax.get_yticklabels()]
 
@@ -20,8 +20,8 @@ def plot_potentials(df, noise, weights, fixed_points, error, var_of_medians, tim
 
     ax.set_yticklabels(labels)
 
-    ax.set_title("Noise: {:.2E}\nWeights: {}\nError: {}\nVar of median: {}".format(
-        noise, weights, round(error, 2), round(var_of_medians, 2)))
+    ax.set_title("Number of fixed points: {}\nNoise: {:.2E}\nWeights: {}\nError: {}\nVar of median: {}".format(
+        len(fixed_points) // 3, noise, weights, round(error, 2), round(var_of_medians, 2)))
 
     plt.savefig(
         f"images/{datetime.now().strftime('%d-%m-%Y, %H:%M:%S')}.png")
