@@ -14,15 +14,28 @@ import matplotlib.pyplot as plt
 from lif_model import LIF
 
 
+def calculate_weights(weights, fp_n=16,total_neurons = 128):
+    if fp_n>=1:
+        print("it_works")
+        new_weights = [0, 0, 0, 0]
+        new_weights[0] = 0.9*weights[0]
+        new_weights[1] = 0.9*weights[1]
+        new_weights[2] = (0.1*total_neurons/fp_n + 1)*weights[0]
+        new_weights[3] = (0.1*total_neurons/fp_n + 1)*weights[1]
+    else:
+        new_weights = weights
+    return new_weights
 
-def connect_with_fixed_points(neurons, n, weights, fp_n = 20):
+def connect_with_fixed_points(neurons, n, weights, fp_n = 16):
     fp_idx = []
     if fp_n != 0:
         for i in range(n):
             if i % (n / fp_n) == 0:
                 fp_idx.append(i)
 
+    print(fp_idx)
 
+    weights = calculate_weights(weights, fp_n, n)
     fixed_neurons = []
     for neur in neurons:
         if neur.id in fp_idx:
@@ -49,20 +62,20 @@ def connect_with_fixed_points(neurons, n, weights, fp_n = 20):
             neur.synapses["inh"][neurons[(neur.id + i) % n]] = weights[3]*np.log(2+(i-5)/3)*1.5
             neur.synapses["inh"][neurons[neur.id - i]] = weights[3]*np.log(2+(i-5)/3)*1.5
         for i in range(1, 5):
-            neur.synapses["exc"][neurons[(neur.id + i) % n]] = weights[2]
-            neur.synapses["exc"][neurons[neur.id - i]] = weights[2]
+            neur.synapses["exc"][neurons[(neur.id + i) % n]] = weights[2]*np.log(2-(i)/5)*1.5
+            neur.synapses["exc"][neurons[neur.id - i]] = weights[2]*np.log(2-(i)/5)*1.5
 
     return fp_idx
 
 
 
 if __name__ == "__main__":
-    n = 100
+    n = 128
     dt = 1
     weights = [1, -1, 5, -5]
     conn = np.zeros([n,n])
     neurons = [LIF(ID, dt=dt) for ID in range(n)]
-    connect_with_fixed_points(neurons, n, weights, fp_n=0)
+    connect_with_fixed_points(neurons, n, weights, fp_n=8)
 
     for neur in neurons:
         for n, w in neur.synapses["inh"].items():

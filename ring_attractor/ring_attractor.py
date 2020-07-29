@@ -23,7 +23,7 @@ weights = [0.045, 0.1, 0.060, 0.2]  # ext, inh, fp ext, inh
 dt = 1
 spike_source = [c for c in range(40, 45)]
 
-neurons = [LIF(ID, dt=dt, noise_mean=0, noise_std=0e-3) for ID in range(n)]
+neurons = [LIF(ID, dt=dt, noise_mean=0, noise_std=1e-3) for ID in range(n)]
 
 
 fixed_points = connect_with_fixed_points(neurons, n, weights, fp_n=8)
