@@ -8,18 +8,17 @@ from connect import connect_with_fixed_points
 from lif_model import LIF
 
 
-def simulate(weights, fp_n, noise, plot=False): 
+def simulate(weights, fp_n, noise, plot=False, starting_point=44): 
     time = 1000
     n = 128
     dt = 1
-    starting_points = [43, 44, 45, 46, 47 ]
+    starting_points = [i for i in range(starting_point - 2, starting_point + 3)]
     spike_source = [c for c in starting_points]
 
     neurons = [LIF(ID, dt=dt, noise_mean=0, noise_std=noise) for ID in range(n)]
 
 
     fixed_points = connect_with_fixed_points(neurons, n, weights, fp_n=fp_n)
-    print(fixed_points)
 
     def input_source(indexes, n_of_spikes, begin_time, neuron, time):
             if time > begin_time:
@@ -86,9 +85,9 @@ def simulate(weights, fp_n, noise, plot=False):
 
 if __name__ == "__main__":
 
-    weights = [0.025, 0.088, 0.050, 0.095]  # ext, inh, fp ext, inh RIGHT WEIGHTS FOR 32 FP
+    weights = [0.035, 0.088, 0.050, 0.095]  # ext, inh, fp ext, inh RIGHT WEIGHTS FOR 32 FP
     # weights = [0.050, 0.088, 0.025, 0.08]  
 
-    e, v = simulate(weights, fp_n=8, noise=2.80e-3, plot=True)
+    e, v = simulate(weights, fp_n=8, noise=3.0e-3, starting_point=40, plot=True)
 
 
