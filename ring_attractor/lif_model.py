@@ -17,7 +17,7 @@ class LIF:
     tau_ref = 2.0 * ms
     tau_syn_inh = 5.0 * ms
     tau_syn_exc = 5.0 * ms
-    tau_m = 20.0 * ms  # Membrane time constant
+    tau_m = 5.0 * ms  # Membrane time constant
     El = -70.0 * mV  # Leaky reversal potential
     Vr = -80.0 * mV  # Reset potential
 
