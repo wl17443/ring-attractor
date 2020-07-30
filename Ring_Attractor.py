@@ -5,7 +5,7 @@ from LIF_Model import LIF
 from Plot import plot_potentials
 
 def simulate(weights, fp_n, noise, plot=False, starting_point=44):
-    time = 300
+    time = 1000
     n = 128
     dt = 1
     starting_points = [i for i in range(
