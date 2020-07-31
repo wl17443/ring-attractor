@@ -1,6 +1,6 @@
 # Ring Attractor Network 
 ## Introduction
-This repository holds the Neuromatch Academy 2020 project work of Stefano, Nikitas, Pranjal and Angela for a ring attractor network.
+This repository holds the Neuromatch Academy 2020 project work of Stefano, Nikitas, Pranjal and Angela for a ring attractor network under the guidance of our pod TA, Peter Vincent and mentorship of Mehrdad Jazayeri.
 ## Scientific Question  
 How to construct a biologically plausible, dynamic ring attractor network of firing neurons?
 ## Background 
