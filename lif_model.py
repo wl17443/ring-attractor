@@ -30,7 +30,8 @@ class LIF:
         self.kexc = 1 / (self.tau_syn_exc * exp(-1))
         self.kinh = 1 / (self.tau_syn_inh * exp(-1))
 
-        self.synapses = {"inh":{}, "exc":{}}  # outgoing synapses, {neuron: weight}
+        # outgoing synapses, {neuron: weight}
+        self.synapses = {"inh": {}, "exc": {}}
         # exc and inh pre-synaptic time delays from last spike, [(time_delay, weight), (...)]
         self.inh_ps_td = []
         self.exc_ps_td = []
@@ -54,14 +55,14 @@ class LIF:
 
         # Else, update Current with Euler
         else:
-            self.V += self.dV() * self.dt  + self.noise()
+            self.V += self.dV() * self.dt + self.noise()
 
         # Send time delays to connected neurons
         if self.time_from_spike > self.tau_ref:
             for neuron, weight in self.synapses["inh"].items():
-                    neuron.inh_ps_td.append((self.time_from_spike, weight))
+                neuron.inh_ps_td.append((self.time_from_spike, weight))
             for neuron, weight in self.synapses["exc"].items():
-                    neuron.exc_ps_td.append((self.time_from_spike, weight))
+                neuron.exc_ps_td.append((self.time_from_spike, weight))
 
         self.time_from_spike += self.dt
 
@@ -79,7 +80,6 @@ class LIF:
         I = 0.0
         for td, w in self.inh_ps_td:
             I += (self.Ginh(td) * (self.V - self.Einh)) * w * 1e-6
-
 
         return I
 
