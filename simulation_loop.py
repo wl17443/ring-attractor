@@ -7,12 +7,11 @@ from utils import calculate_weights
 if __name__ == "__main__":
 
     weights = [0.050, 0.088, 0.050, 0.095]  # ext, inh, fp ext, inh
-
     fixed_points = [0, 1, 2, 4, 8, 16, 32]
-
     time = 5000
+    iterations = 20
 
-    noises = np.linspace(0.0e-3, 2.0e-3, 10)
+    noises = np.linspace(0.0e-3, 2.0e-3, 5)
     fixed_points_idx = [str(i) for i in fixed_points]
     noises_idx = ["{:.2E}".format(i) for i in noises]
 
@@ -22,7 +21,7 @@ if __name__ == "__main__":
         for fp_idx, fp_n in zip(fixed_points_idx, fixed_points):
 
             errors = []
-            for _ in range(1):
+            for _ in range(iterations):
                 ring = RingAttractor(noise=noise, weights=calculate_weights(
                     weights, fp_n), fixed_points_number=fp_n)
                 e = ring.simulate(time=time)

@@ -98,7 +98,7 @@ class RingAttractor:
         mid_point = round(
             np.mean([self.fixed_points[idx], self.fixed_points[idx-1]]))
 
-        return mid_point
+        return int(mid_point)
 
 
 if __name__ == "__main__":
