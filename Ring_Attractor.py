@@ -41,7 +41,7 @@ def simulate(weights, fp_n, noise, plot=False, starting_point=44):
     spikes = spikes.astype(int)
     spikes = spikes.loc[:, time-100:]
     for i in range(n):
-        spikes.loc[i] = spikes.loc[i] * i
+        spikes.loc[i] = spikes.loc[i] * tesi
 
     medians = []
     for i in range(time - 100, time):
@@ -63,5 +63,5 @@ if __name__ == "__main__":
     # ext, inh, fp ext, inh
     _weights = [0.050, 0.088, 0.050, 0.095]
 
-    e, v = simulate(_weights, fp_n=8, noise=3.5e-3,
+    e, v = simulate(_weights, fp_n=0, noise=2.5e-3,
                     starting_point=40, plot=True)

@@ -32,11 +32,11 @@ if __name__ == "__main__":
     # var_records = records.copy()
 
     # for n_idx, n in tqdm(enumerate(noises)):
-    for i, fp in enumerate(fixed_points):
+    for i, fp in tqdm(enumerate(fixed_points)):
         errors = []
         # variances = []
 
-        for _ in range(2):
+        for _ in range(10):
             e, _ = simulate(calculate_weights(weights, fp),
                             fp_n=fp,
                             noise=2.5e-3,
