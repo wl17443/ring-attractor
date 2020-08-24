@@ -42,7 +42,7 @@ class RingAttractor:
             plot_potentials(df, self.noise, self.weights,
                             self.fixed_points, e, time)
 
-        return error
+        return e
 
     def input_source(self, mid_point, n_of_spikes, weight, begin_time, neuron, time):
         sources = [i for i in range(mid_point - 2, mid_point + 3)]
@@ -91,10 +91,10 @@ class RingAttractor:
 
     def get_mid_point(self):
         standard = 45
-        if len(self.fixed_points) == 0:
+        if len(self.fixed_points) < 4:
             return standard
 
-        idx = np.where(np.array(self.fixed_points) > standard)[0][0]
+        idx = np.where(self.fixed_points > standard)[0][0]
         mid_point = round(
             np.mean([self.fixed_points[idx], self.fixed_points[idx-1]]))
 
@@ -104,5 +104,5 @@ class RingAttractor:
 if __name__ == "__main__":
 
     # ext, inh, fp ext, inh
-    ring = RingAttractor(noise=2.e-3, fixed_points_number=4)
+    ring = RingAttractor(noise=2.0e-3, fixed_points_number=4)
     error = ring.simulate(time=10000, plot=True)

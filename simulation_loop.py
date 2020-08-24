@@ -10,19 +10,19 @@ if __name__ == "__main__":
 
     fixed_points = [0, 1, 2, 4, 8, 16, 32]
 
-    time = 300
+    time = 5000
 
-    noises = np.linspace(1.0, 2.0, 10)
+    noises = np.linspace(0.0e-3, 2.0e-3, 10)
     fixed_points_idx = [str(i) for i in fixed_points]
     noises_idx = ["{:.2E}".format(i) for i in noises]
 
     records = pd.DataFrame(index=fixed_points_idx, columns=noises_idx)
 
-    for n_idx, noise in zip(noises_idx, noises):
-        for fp_idx, fp_n in tqdm(zip(fixed_points_idx, fixed_points)):
+    for n_idx, noise in tqdm(zip(noises_idx, noises)):
+        for fp_idx, fp_n in zip(fixed_points_idx, fixed_points):
 
             errors = []
-            for _ in range(10):
+            for _ in range(1):
                 ring = RingAttractor(noise=noise, weights=calculate_weights(
                     weights, fp_n), fixed_points_number=fp_n)
                 e = ring.simulate(time=time)
@@ -30,6 +30,6 @@ if __name__ == "__main__":
                 if not np.isnan(e):
                     errors.append(e)
 
-            records.loc[fp_idx, noise] = np.mean(errors)
+            records.loc[fp_idx, n_idx] = np.mean(errors)
 
     records.to_csv("error_by_noise.csv")
