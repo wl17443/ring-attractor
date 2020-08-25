@@ -6,11 +6,10 @@ from ring_attractor import RingAttractor
 from utils import calculate_weights
 
 weights = [0.050, 0.088, 0.050, 0.15]  # ext, inh, fp ext, inh
-fixed_points = [0, 1, 2, 4]
-# fixed_points = [0, 1, 2, 4, 8, 16, 32]
-time = 100
-iterations = 4
-noise_levels = 3
+fixed_points = [0, 1, 2, 4, 8, 16, 32]
+time = 10000
+iterations = 30
+noise_levels = 5
 neurons_n = 256
 
 noises = np.linspace(0.0e-3, 2.0e-3, noise_levels)
