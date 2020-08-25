@@ -10,8 +10,9 @@ if __name__ == "__main__":
     fixed_points = [0, 1, 2, 4, 8, 16, 32]
     time = 5000
     iterations = 20
+    noise_levels = 5
 
-    noises = np.linspace(0.0e-3, 2.0e-3, 5)
+    noises = np.linspace(0.0e-3, 2.0e-3, noise_levels)
     fixed_points_idx = [str(i) for i in fixed_points]
     noises_idx = ["{:.2E}".format(i) for i in noises]
 
