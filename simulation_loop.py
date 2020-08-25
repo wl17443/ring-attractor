@@ -30,11 +30,10 @@ for n_idx, noise in tqdm(zip(noises_idx, noises)):
 
         errors = []
         with concurrent.futures.ProcessPoolExecutor() as executor:
-            for _ in range(iterations):
-                results = [executor.submit(iteration, noise, fp_n) for _ in range(iterations)]
+            results = [executor.submit(iteration, noise, fp_n) for _ in range(iterations)]
 
-                for f in concurrent.futures.as_completed(results):
-                    errors.append(f.result())
+            for f in concurrent.futures.as_completed(results):
+                errors.append(f.result())
 
 
         records.loc[fp_idx, n_idx] = np.mean(errors)
