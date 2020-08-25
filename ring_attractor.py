@@ -12,7 +12,7 @@ class RingAttractor:
                  weights=(0.050, 0.088, 0.050, 0.15),
                  fixed_points_number=0):
 
-        self.n = 128
+        self.n = n
         self.noise = noise
         self.weights = weights
         self.fp_n = fixed_points_number
