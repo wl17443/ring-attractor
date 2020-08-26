@@ -104,5 +104,5 @@ class RingAttractor:
 if __name__ == "__main__":
 
     # ext, inh, fp ext, inh
-    ring = RingAttractor(noise=2.0e-3, fixed_points_number=4)
+    ring = RingAttractor(n=256, noise=2.0e-3, fixed_points_number=64)
     error = ring.simulate(time=10000, plot=True)
