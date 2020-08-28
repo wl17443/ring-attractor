@@ -3,6 +3,7 @@ import numpy as np
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
+from sklearn.linear_model import LinearRegression
 
 # TODO: explore parameters of this function
 def calculate_weights(weights, fp_n=16, total_neurons=128):
@@ -17,7 +18,7 @@ def calculate_weights(weights, fp_n=16, total_neurons=128):
     return new_weights
 
 
-def compute_gain(potentials):
+def compute_gain(potentials, mid_point):
     df = pd.DataFrame(potentials)
     spikes = df == 0.0
     spikes = spikes.astype(int)
@@ -26,7 +27,15 @@ def compute_gain(potentials):
     coo = spikes.sparse.to_coo()
     coo.eliminate_zeros()
 
-    error, _ = np.polyfit(coo.col, coo.row, 1)
+    regr = LinearRegression(fit_intercept=True)
+    
+    x = coo.col.reshape(-1, 1)
+    y = coo.row.reshape(-1, 1)
+
+    regr.fit(x, y)
+    error = regr.coef_[0][0]
+
+    ### error, b = np.polyfit(coo.col, coo.row, 1)
 
     # spikes = spikes.loc[:, time-100:]
     # for i in range(n):
@@ -61,8 +70,8 @@ def plot_potentials(df, noise, weights, fixed_points, error, time):
 
     ax.set_yticklabels(labels)
 
-    ax.set_title("Number of fixed points: {}\nNoise: {:.2E}\nWeights: {}\nError: {}".format(
-        len(fixed_points) // 3, noise, weights, round(error * time, 3)))
+    ax.set_title("Number of fixed points: {}\nNoise: {:.2E}\nWeights: {}\nError: {:.2E}".format(
+        len(fixed_points) // 3, noise, weights, error))
 
     plt.savefig(
         f"images/{datetime.now().strftime('%d-%m-%Y, %H:%M:%S')}.png")

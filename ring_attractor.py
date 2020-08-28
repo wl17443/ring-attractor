@@ -43,7 +43,7 @@ class RingAttractor:
                 neuron.step()
                 potentials[neuron.id].append(neuron.V)
 
-        df, e = compute_gain(potentials)
+        df, e = compute_gain(potentials, mid_point)
 
         if self.plot:
             plot_potentials(df, self.noise, self.weights,
@@ -114,5 +114,5 @@ class RingAttractor:
 
 if __name__ == "__main__":
 
-    ring = RingAttractor(n=32, noise=3.0e-3, fixed_points_number=4, time=10000, plot=True)
+    ring = RingAttractor(n=32, noise=3e-3, weights=(0.050, 0.088, 0.050, 0.250), fixed_points_number=2, time=10000, plot=True)
     error = ring.simulate()
