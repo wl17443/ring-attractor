@@ -6,7 +6,7 @@ from ring_attractor import RingAttractor
 from utils import calculate_weights
 
 weights = [0.050, 0.088, 0.050, 0.15]  # ext, inh, fp ext, inh
-fixed_points = [0, 1, 2, 4, 8, 16, 32, 64]
+fixed_points = [0, 1, 2, 4, 8, 16, 32]
 time = 10000
 iterations = 30
 noise_levels = 30

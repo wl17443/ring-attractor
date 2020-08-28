@@ -1,5 +1,5 @@
 import numpy as np
-from utils import compute_stats, plot_potentials
+from utils import compute_gain, plot_potentials
 from lif_model import LIF
 
 
@@ -8,27 +8,34 @@ class RingAttractor:
 
     def __init__(self,
                  n=128,
-                 noise=2.5e-3,
+                 noise=2.0e-3,
+                 # TODO: pick more stable fixed point weights
                  weights=(0.050, 0.088, 0.050, 0.15),
-                 fixed_points_number=0):
+                 fixed_points_number=0, 
+                 time=300,
+                 plot=False):
 
         self.n = n
         self.noise = noise
         self.weights = weights
         self.fp_n = fixed_points_number
+        self.time = time
+        self.plot = plot
 
         self.neurons = [LIF(ID, noise_mean=0, noise_std=self.noise)
                         for ID in range(n)]
+
+        # TODO: move weights, fp_n and noise to the simulate method
         self.fixed_points = self.get_fixed_points()
 
         self.connect_with_fixed_points()
 
-    def simulate(self, time=300, plot=False):
+    def simulate(self):
 
         mid_point = self.get_mid_point()
 
         potentials = [[] for _ in range(self.n)]
-        for t in range(time):
+        for t in range(self.time):
             for neuron in self.neurons:
 
                 self.input_source(mid_point=mid_point, n_of_spikes=5,
@@ -36,11 +43,11 @@ class RingAttractor:
                 neuron.step()
                 potentials[neuron.id].append(neuron.V)
 
-        df, e = compute_stats(potentials, self.n, time, mid_point)
+        df, e = compute_gain(potentials)
 
-        if plot:
+        if self.plot:
             plot_potentials(df, self.noise, self.weights,
-                            self.fixed_points, e, time)
+                            self.fixed_points, e, self.time)
 
         return e
 
@@ -90,19 +97,22 @@ class RingAttractor:
         return np.where(distances < 3)[0]
 
     def get_mid_point(self):
-        standard = 45
-        if len(self.fixed_points) < 4:
-            return standard
+        if self.fp_n <= 1:
+            return self.n // 2
 
-        idx = np.where(self.fixed_points > standard)[0][0]
-        mid_point = round(
-            np.mean([self.fixed_points[idx], self.fixed_points[idx-1]]))
 
-        return int(mid_point)
+        free_points = set(np.arange(self.n)) - set(self.fixed_points)
+        median = [*free_points][len(free_points) // 4]
+
+
+        high = self.fixed_points[self.fixed_points > median][0]
+        low = self.fixed_points[self.fixed_points < median][-1]
+        mid_point = (high + low) // 2
+
+        return mid_point
 
 
 if __name__ == "__main__":
 
-    # ext, inh, fp ext, inh
-    ring = RingAttractor(n=256, noise=2.0e-3, fixed_points_number=64)
-    error = ring.simulate(time=10000, plot=True)
+    ring = RingAttractor(n=32, noise=3.0e-3, fixed_points_number=4, time=10000, plot=True)
+    error = ring.simulate()

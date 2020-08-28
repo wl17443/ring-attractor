@@ -4,7 +4,6 @@ import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
 
-
 # TODO: explore parameters of this function
 def calculate_weights(weights, fp_n=16, total_neurons=128):
     if fp_n >= 1:
@@ -18,21 +17,30 @@ def calculate_weights(weights, fp_n=16, total_neurons=128):
     return new_weights
 
 
-def compute_stats(potentials, n, time, starting_point):
+def compute_gain(potentials):
     df = pd.DataFrame(potentials)
     spikes = df == 0.0
     spikes = spikes.astype(int)
-    spikes = spikes.loc[:, time-100:]
-    for i in range(n):
-        spikes.loc[i] = spikes.loc[i] * i
 
-    medians = []
-    for i in range(time - 100, time):
-        medians.append(spikes[i].loc[spikes[i] != 0.0].median())
+    spikes = spikes.astype(pd.SparseDtype())
+    coo = spikes.sparse.to_coo()
+    coo.eliminate_zeros()
 
-    medians = pd.Series(medians).dropna()
-    mean_of_medians = np.mean(medians)
-    error = np.abs(mean_of_medians - starting_point)
+    error, _ = np.polyfit(coo.col, coo.row, 1)
+
+    # spikes = spikes.loc[:, time-100:]
+    # for i in range(n):
+    #     spikes.loc[i] = spikes.loc[i] * i
+
+    # medians = []
+    # for i in range(time - 100, time):
+    #     medians.append(spikes[i].loc[spikes[i] != 0.0].median())
+
+    # medians = pd.Series(medians).dropna()
+    # mean_of_medians = np.mean(medians)
+    # error = np.abs(mean_of_medians - starting_point)
+
+
 
     return df, error
 
@@ -54,7 +62,7 @@ def plot_potentials(df, noise, weights, fixed_points, error, time):
     ax.set_yticklabels(labels)
 
     ax.set_title("Number of fixed points: {}\nNoise: {:.2E}\nWeights: {}\nError: {}".format(
-        len(fixed_points) // 3, noise, weights, round(error, 2)))
+        len(fixed_points) // 3, noise, weights, round(error * time, 3)))
 
     plt.savefig(
         f"images/{datetime.now().strftime('%d-%m-%Y, %H:%M:%S')}.png")
