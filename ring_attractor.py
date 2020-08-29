@@ -114,5 +114,6 @@ class RingAttractor:
 
 if __name__ == "__main__":
 
-    ring = RingAttractor(n=32, noise=3e-3, weights=(0.050, 0.088, 0.050, 0.250), fixed_points_number=2, time=10000, plot=True)
+    np.random.seed(42)
+    ring = RingAttractor(n=32, noise=3e-3, weights=(0.050, 0.088, 0.050, 0.250), fixed_points_number=2, time=100, plot=True)
     error = ring.simulate()

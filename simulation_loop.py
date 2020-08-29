@@ -11,6 +11,7 @@ time = 10000
 iterations = 30
 noise_levels = 30
 neurons_n = 256
+np.random.seed(42)
 
 noises = np.linspace(0.0e-3, 3.0e-3, noise_levels)
 fixed_points_idx = [str(i) for i in fixed_points]
