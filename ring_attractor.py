@@ -24,7 +24,7 @@ class RingAttractor:
         self.fp_n = fixed_points_number
         self.time = time
         self.plot = plot
-        self.mid_point = None
+        self.mid_point = 0
 
         self.neurons = [LIF(ID=i, angle=360.0/n*i, noise_mean=0, noise_std=self.noise,)
                         for i in range(n)]

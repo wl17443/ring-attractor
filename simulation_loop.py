@@ -4,13 +4,12 @@ import pandas as pd
 from tqdm import tqdm
 from ring_attractor import RingAttractor
 
-weights = [0.050, 0.088, 0.050, 0.25]  # ext, inh, fp ext, inh
+weights = [0.050, 0.100, 0.050, 0.250]  # ext, inh, fp ext, inh
 fixed_points = [0, 1, 2, 4, 8, 16, 32]
 time = 10000
 iterations = 30
 noise_levels = 30
 neurons_n = 256
-np.random.seed(42)
 
 noises = np.linspace(0.0e-3, 3.0e-3, noise_levels)
 fixed_points_idx = [str(i) for i in fixed_points]
