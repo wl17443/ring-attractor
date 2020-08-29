@@ -16,7 +16,8 @@ class RingAttractor:
                  weights=(0.050, 0.100, 0.050, 0.250),
                  fixed_points_number=0,
                  time=1000,
-                 plot=False):
+                 plot=False,
+                 random_seed=None):
 
         self.n = n
         self.noise = noise
@@ -24,19 +25,19 @@ class RingAttractor:
         self.fp_n = fixed_points_number
         self.time = time
         self.plot = plot
-        self.mid_point = 0
+        self.random_seed = random_seed
 
-        self.neurons = [LIF(ID=i, angle=360.0/n*i, noise_mean=0, noise_std=self.noise,)
-                        for i in range(n)]
+        self.neurons = [LIF(ID=i, angle=360.0/n*i, noise_mean=0, noise_std=self.noise,) for i in range(n)]
 
         self.fixed_points = self.get_fixed_points()
+        self.mid_point = self.get_mid_point()
 
         self.connect_with_fixed_points()
 
+        if random_seed:
+            np.random.seed(random_seed)
+
     def simulate(self):
-
-        self.get_mid_point()
-
         potentials = [[] for _ in range(self.n)]
         for t in range(self.time):
             for neuron in self.neurons:
@@ -123,7 +124,9 @@ class RingAttractor:
 
         high = self.fixed_points[self.fixed_points > median][0]
         low = self.fixed_points[self.fixed_points < median][-1]
-        self.mid_point = (high + low) // 2
+        mid_point = (high + low) // 2
+
+        return mid_point
 
     def plot_potentials(self, df, err):
         _, ax = plt.subplots(figsize=(10, 10))
@@ -131,10 +134,10 @@ class RingAttractor:
                     yticklabels=10, cbar_kws={'label': "Membrane Potential (V)"}, ax=ax)
         plt.xlabel("Time (ms)")
         plt.ylabel("Orientation of neuron")
-        plt.subplots_adjust(left=0.07, bottom=0.07, right=0.97, top=0.89)
+        plt.subplots_adjust(left=0.07, bottom=0.07, right=0.97, top=0.88)
 
-        ax.set_title("Number of fixed points: {}\nNoise: {:.3e}\nWeights: {}\nError: {:.3f}".format(
-            self.fp_n, self.noise, self.weights, err))
+        ax.set_title("Number of fixed points: {}\nNoise: {:.3e}\nWeights: {}\nError: {:.3f}\nRandom seed: {}".format(
+            self.fp_n, self.noise, self.weights, err, self.random_seed))
 
         plt.savefig(
             f"images/{datetime.now().strftime('%d-%m-%Y, %H:%M:%S')}.png")
@@ -144,5 +147,5 @@ class RingAttractor:
 if __name__ == "__main__":
 
     # np.random.seed(42)
-    ring = RingAttractor(n=64, noise=3e-3, weights=(0.050, 0.100, 0.050, 0.250), fixed_points_number=2, time=1000, plot=True)
+    ring = RingAttractor(n=64, noise=3e-3, weights=(0.050, 0.100, 0.050, 0.250), fixed_points_number=2, time=1000, plot=True, random_seed=42)
     error = ring.simulate()
