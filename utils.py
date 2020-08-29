@@ -37,7 +37,7 @@ def compute_stats(potentials, n, time, starting_point):
     return df, error
 
 
-def plot_potentials(df, noise, weights, fixed_points, error, time, random_seed):
+def plot_potentials(df, noise, weights, fixed_points, error, time, fp_width, random_seed):
     _, ax = plt.subplots(figsize=(10, 10))
     sns.heatmap(df, vmin=-0.08, vmax=0.0, cmap="viridis", xticklabels=int(time/10),
                 yticklabels=5, cbar_kws={'label': "Membrane Potential (V)"}, ax=ax)
@@ -50,7 +50,9 @@ def plot_potentials(df, noise, weights, fixed_points, error, time, random_seed):
     for i, l in enumerate(labels):
         if int(l) in fixed_points:
             labels[i] = labels[i] + '\nFP'
-
+    for target in np.arange(0,len(fixed_points),fp_width):
+        cur_fixed_point = np.mean(fixed_points[target:(target+fp_width)])
+        plt.plot([0,time],[cur_fixed_point,cur_fixed_point],color='k')
     ax.set_yticklabels(labels)
 
     ax.set_title("Number of fixed points: {}\nNoise: {:.2E}\nWeights: {}\nError: {}\n Random Seed: {}".format(
