@@ -19,6 +19,7 @@ class RingAttractor:
 
         self.neurons = [LIF(ID, noise_mean=0, noise_std=self.noise)
                         for ID in range(n)]
+        self.fp_width = 3
         self.fixed_points = self.get_fixed_points()
 
         self.connect_with_fixed_points()
@@ -40,7 +41,7 @@ class RingAttractor:
 
         if plot:
             plot_potentials(df, self.noise, self.weights,
-                            self.fixed_points, e, time)
+                            self.fixed_points, e, time,self.fp_width)
 
         return e
 
@@ -87,7 +88,8 @@ class RingAttractor:
         interval = self.n // self.fp_n
 
         distances = index % interval
-        return np.where(distances < 3)[0]
+        
+        return np.where(distances < self.fp_width)[0]
 
     def get_mid_point(self):
         standard = 45
