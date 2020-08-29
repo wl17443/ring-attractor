@@ -1,6 +1,7 @@
 import numpy as np
 from utils import compute_stats, plot_potentials
 from lif_model import LIF
+import warnings
 
 
 class RingAttractor:
@@ -23,9 +24,11 @@ class RingAttractor:
         self.fixed_points = self.get_fixed_points()
 
         self.connect_with_fixed_points()
+        self.flushed = 0
 
     def simulate(self, time=300, plot=False):
-
+        if self.flushed == 1:
+            warnings.warn("Simulation has not been flushed!")
         mid_point = self.get_mid_point()
 
         potentials = [[] for _ in range(self.n)]
@@ -42,7 +45,7 @@ class RingAttractor:
         if plot:
             plot_potentials(df, self.noise, self.weights,
                             self.fixed_points, e, time,self.fp_width)
-
+        self.flushed = 1
         return e
 
     def input_source(self, mid_point, n_of_spikes, weight, begin_time, neuron, time):
@@ -53,6 +56,19 @@ class RingAttractor:
                 for _ in range(n_of_spikes):
                     neuron.exc_ps_td.append(
                         ((time - begin_time) * 1e-3, weight))
+                    
+    def flush(self,neurons=True,fixed_points=True,connections=True):
+        # Reset the model so simulations can be re-run without carrying 
+        # activity over
+        if neurons:
+            self.neurons = [LIF(ID, noise_mean=0, noise_std=self.noise)
+                            for ID in range(self.n)]
+        if fixed_points:
+            self.fixed_points=self.get_fixed_points()
+        if connections:
+            self.connect_with_fixed_points()
+        self.flushed = 0
+        
 
     def connect_with_fixed_points(self):
         for neur in self.neurons:
@@ -101,6 +117,7 @@ class RingAttractor:
             np.mean([self.fixed_points[idx], self.fixed_points[idx-1]]))
 
         return int(mid_point)
+
 
 
 if __name__ == "__main__":
