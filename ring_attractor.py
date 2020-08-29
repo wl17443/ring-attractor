@@ -13,8 +13,7 @@ class RingAttractor:
     def __init__(self,
                  n=128,
                  noise=2.0e-3,
-                 # TODO: pick more stable fixed point weights
-                 weights=(0.050, 0.088, 0.050, 0.15),
+                 weights=(0.050, 0.100, 0.050, 0.250),
                  fixed_points_number=0, 
                  time=300,
                  plot=False):
@@ -29,7 +28,6 @@ class RingAttractor:
         self.neurons = [LIF(ID=i, angle=360.0/n*i, noise_mean=0, noise_std=self.noise,)
                         for i in range(n)]
 
-        # TODO: move weights, fp_n and noise to the simulate method
         self.fixed_points = self.get_fixed_points()
 
         self.connect_with_fixed_points()
@@ -53,6 +51,24 @@ class RingAttractor:
             self.plot_potentials(df, e)
 
         return e
+
+    def compute_gain(self, potentials, mid_point):
+        df = pd.DataFrame(potentials)
+        df.index = [self.neurons[i].angle for i in df.index]
+        spikes = df == 0.0
+
+        spikes = spikes.iloc[:, -30:]
+        spikes = spikes.astype(int)
+        spikes = spikes.apply(lambda x: x * x.index)
+        spikes = spikes.replace(0, np.nan)
+
+        means = spikes.apply(circular_mean, axis=0)
+        total_mean = circular_mean(means)
+        error = np.abs(self.neurons[mid_point].angle - total_mean)
+
+        print("total_mean", total_mean)
+        print(self.neurons[mid_point].angle)
+        return df, error
 
     def input_source(self, mid_point, n_of_spikes, weight, begin_time, neuron, time):
         sources = [i for i in range(mid_point - 2, mid_point + 3)]
@@ -114,65 +130,24 @@ class RingAttractor:
 
         return mid_point
 
-    def compute_gain(self, potentials, mid_point):
-        df = pd.DataFrame(potentials)
-        df.index = [self.neurons[i].angle for i in df.index]
-        spikes = df == 0.0
-
-        # sparse = spikes.astype(pd.SparseDtype())
-        # coo = sparse.sparse.to_coo()
-        # coo.eliminate_zeros()
-
-        # regr = LinearRegression(fit_intercept=True)
-        
-        # x = coo.col.reshape(-1, 1)
-        # y = coo.row.reshape(-1, 1)
-
-        # regr.fit(x, y)
-        # error = np.abs(regr.coef_[0][0])
-
-        
-
-        spikes = spikes.iloc[:, -30:]
-        spikes = spikes.astype(int)
-        spikes = spikes.apply(lambda x: x * x.index)
-        spikes = spikes.replace(0, np.nan)
-
-        means = spikes.apply(circular_mean)
-        total_mean = circular_mean(means)
-        error = np.abs(self.neurons[mid_point].angle - total_mean)
-
-        print("total_mean", total_mean)
-        print(self.neurons[mid_point].angle)
-
-        return df, error
 
 
     def plot_potentials(self, df, error):
         _, ax = plt.subplots(figsize=(10, 10))
-        sns.heatmap(df, vmin=-0.08, vmax=0.0, cmap="viridis", xticklabels=int(self.time/10),
-                    yticklabels=5, cbar_kws={'label': "Membrane Potential (V)"}, ax=ax)
+        sns.heatmap(df, vmin=-0.08, vmax=0.0, cmap="viridis", xticklabels=int(self.time/10), yticklabels=10, cbar_kws={'label': "Membrane Potential (V)"}, ax=ax)
         plt.xlabel("Time (ms)")
         plt.ylabel("Orientation of neuron")
         plt.subplots_adjust(left=0.07, bottom=0.07, right=0.97, top=0.89)
 
-        labels = [item.get_text() for item in ax.get_yticklabels()]
-
-        # for i, l in enumerate(labels):
-        #     if int(l) in fixed_points:
-        #         labels[i] = labels[i] + '\nFP'
-
         ax.set_yticklabels(labels)
 
-        ax.set_title("Number of fixed points: {}\nNoise: {:.3e}\nWeights: {}\nError: {:.3f}".format(
-            self.fp_n, self.noise, self.weights, error * self.time))
+        ax.set_title("Number of fixed points: {}\nNoise: {:.3e}\nWeights: {}\nError: {:.3f}".format(self.fp_n, self.noise, self.weights, error))
 
-        plt.savefig(
-            f"images/{datetime.now().strftime('%d-%m-%Y, %H:%M:%S')}.png")
+        plt.savefig( f"images/{datetime.now().strftime('%d-%m-%Y, %H:%M:%S')}.png")
         plt.show()
 
 if __name__ == "__main__":
 
     # np.random.seed(42)
-    ring = RingAttractor(n=64, noise=3e-3, weights=(0.050, 0.100, 0.050, 0.250), fixed_points_number=2, time=100, plot=True)
+    ring = RingAttractor(n=64, noise=3e-3, weights=(0.050, 0.100, 0.050, 0.250), fixed_points_number=2, time=1000, plot=True)
     error = ring.simulate()

@@ -19,17 +19,16 @@ def calculate_weights(weights, fp_n=16, total_neurons=128):
 
 
 def circular_mean(angles): 
-      print(angles)
       a = np.array(angles) * np.pi / 180.  
       s = np.nanmean(np.sin(a)) 
       c = np.nanmean(np.cos(a)) 
        
       if c < 0 and s > 0: 
-          return np.arctan(s/c) + 180 
+          return np.arctan(s/c) * 180. / np.pi + 180 
       elif s < 0 and c > 0: 
-          return np.arctan(s/c) + 360 
+          return np.arctan(s/c) * 180. / np.pi + 360 
       else: 
-          return np.arctan(s/c) 
+          return np.arctan(s/c) * 180. / np.pi 
 
 def plot_errors(csv_name):
     _, ax = plt.subplots(figsize=(10, 10))
