@@ -10,18 +10,23 @@ class RingAttractor:
                  n=128,
                  noise=2.5e-3,
                  weights=(0.050, 0.088, 0.050, 0.15),
-                 fixed_points_number=0):
+                 fixed_points_number=0,
+                 random_seed=None):
 
         self.n = n
         self.noise = noise
         self.weights = weights
         self.fp_n = fixed_points_number
+        self.random_seed = random_seed
 
         self.neurons = [LIF(ID, noise_mean=0, noise_std=self.noise)
                         for ID in range(n)]
         self.fixed_points = self.get_fixed_points()
 
         self.connect_with_fixed_points()
+
+        if random_seed:
+            np.random.seed(self.random_seed)
 
     def simulate(self, time=300, plot=False):
 
@@ -40,7 +45,7 @@ class RingAttractor:
 
         if plot:
             plot_potentials(df, self.noise, self.weights,
-                            self.fixed_points, e, time)
+                            self.fixed_points, e, time, self.random_seed)
 
         return e
 
@@ -104,5 +109,5 @@ class RingAttractor:
 if __name__ == "__main__":
 
     # ext, inh, fp ext, inh
-    ring = RingAttractor(noise=2.0e-3, fixed_points_number=4)
-    error = ring.simulate(time=10000, plot=True)
+    ring = RingAttractor(noise=2.0e-3, fixed_points_number=4, random_seed=None)
+    error = ring.simulate(time=100, plot=True)
