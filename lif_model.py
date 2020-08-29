@@ -21,7 +21,7 @@ class LIF:
     El = -70.0 * mV  # Leaky reversal potential
     Vr = -80.0 * mV  # Reset potential
 
-    def __init__(self, ID, dt=1, noise_mean=0, noise_std=1):
+    def __init__(self, ID, angle, dt=1, noise_mean=0, noise_std=1):
         self.id = ID
         self.Iext = 0.0
         self.V = self.Vr  # Membrane potential, set at reset
@@ -38,6 +38,8 @@ class LIF:
 
         self.noise_mean = noise_mean
         self.noise_std = noise_std
+
+        self.angle = angle
 
     def step(self):
 
