@@ -147,5 +147,7 @@ class RingAttractor:
 if __name__ == "__main__":
 
     # np.random.seed(42)
-    ring = RingAttractor(n=64, noise=3e-3, weights=(0.050, 0.100, 0.050, 0.250), fixed_points_number=2, time=1000, plot=True, random_seed=42)
+    ring = RingAttractor(n=256, noise=1.5e-3, weights=(0.050, 0.100, 0.050, 0.250), fixed_points_number=1, time=10000, plot=True, random_seed=None)
+    print(ring.fixed_points)
+    print(ring.mid_point)
     error = ring.simulate()
