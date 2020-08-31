@@ -45,8 +45,8 @@ if __name__ == "__main__":
         records[ID].loc[fp_idx, noise_idx] = error
         seeds[ID].loc[fp_idx, noise_idx] = seed
 
-    for i, df in records:
+    for i, df in enumerate(records):
         df.to_csv("errors_it_{}.csv".format(i))
 
-    for i, df in seeds:
+    for i, df in enumerate(seeds):
         df.to_csv("seeds_it_{}.csv".format(i))
