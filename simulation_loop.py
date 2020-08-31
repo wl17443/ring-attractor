@@ -25,11 +25,11 @@ params = {
     "noise_low": 0.0,
     "noise_high": 3.0e-3,
     "weights": [0.050, 0.100, 0.050, 0.250],  # ext, inh, fp ext, inh
-    "fixed_points": [0, 1, 2]
+    "fixed_points": [0, 1, 2, 4]
 }
 
 
-def simulation(parameters, _noise, noise_idx, _fp_n, fp_idx, it_n, counter):
+def simulation(parameters, _noise, noise_idx, _fp_n, it_n, counter):
 
     ring = RingAttractor(n=parameters["neurons_n"],
                          noise=_noise,
@@ -41,15 +41,14 @@ def simulation(parameters, _noise, noise_idx, _fp_n, fp_idx, it_n, counter):
     e = ring.simulate()
     counter.inc()
 
-    return e, noise_idx, fp_idx, it_n
+    return e, noise_idx, _fp_n, it_n
 
 
 noises = np.linspace(
     params["noise_low"], params["noise_high"], params["noise_levels"])
 noises_idx = ["{:.2e}".format(i) for i in noises]
-fixed_points_idx = [str(i) for i in params["fixed_points"]]
 
-records = [pd.DataFrame(index=fixed_points_idx, columns=noises_idx)
+records = [pd.DataFrame(index=params["fixed_points"], columns=noises_idx)
            for _ in range(params["iterations"])]
 seeds = np.random.choice(10000, params["iterations"])
 counter = Counter(params)
@@ -60,10 +59,10 @@ with concurrent.futures.ThreadPoolExecutor() as executor:
 
     for it in range(params["iterations"]):
         for noise_idx, noise in zip(noises_idx, noises):
-            for fp_idx, fp_n in zip(fixed_points_idx, params["fixed_points"]):
+            for fp_n in params["fixed_points"]:
 
                 results.append(executor.submit(
-                    simulation, params, noise, noise_idx, fp_n, fp_idx, it, counter))
+                    simulation, params, noise, noise_idx, fp_n, it, counter))
 
 
 for f in concurrent.futures.as_completed(results):
@@ -71,5 +70,9 @@ for f in concurrent.futures.as_completed(results):
     records[it_n].loc[fp_idx, noise_idx] = error
 
 for i, df in enumerate(records):
-    df.to_csv("csv/errors_seed_{}.csv".format(seeds[i]))
-    # TODO take mean across all records
+    df.to_csv("csv/singular_iters/seed_{}.csv".format(seeds[i]))
+
+full_df = pd.concat(records).astype(float)
+df_average = full_df.groupby(full_df.index).mean()
+
+df_average.to_csv("csv/means.csv")
