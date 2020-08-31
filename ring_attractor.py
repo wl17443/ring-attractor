@@ -11,12 +11,14 @@ class RingAttractor:
                  n=128,
                  noise=2.5e-3,
                  weights=(0.050, 0.088, 0.050, 0.15),
-                 fixed_points_number=0):
+                 fixed_points_number=0,
+                 random_seed=None):
 
         self.n = n
         self.noise = noise
         self.weights = weights
         self.fp_n = fixed_points_number
+        self.random_seed = random_seed
 
         self.neurons = [LIF(ID, noise_mean=0, noise_std=self.noise)
                         for ID in range(n)]
@@ -25,6 +27,9 @@ class RingAttractor:
 
         self.connect_with_fixed_points()
         self.flushed = 0
+
+        if random_seed:
+            np.random.seed(self.random_seed)
 
     def simulate(self, time=300, plot=False):
         if self.flushed == 1:
@@ -45,7 +50,8 @@ class RingAttractor:
         if plot:
             plot_potentials(df, self.noise, self.weights,
                             self.fixed_points, e, time,self.fp_width)
-        self.flushed = 1
+                self.fixed_points, e, time, self.fp_width, self.random_seed)
+            self.flushed = 1
         return e
 
     def input_source(self, mid_point, n_of_spikes, weight, begin_time, neuron, time):
@@ -123,5 +129,5 @@ class RingAttractor:
 if __name__ == "__main__":
 
     # ext, inh, fp ext, inh
-    ring = RingAttractor(noise=2.0e-3, fixed_points_number=4)
-    error = ring.simulate(time=10000, plot=True)
+    ring = RingAttractor(noise=2.0e-3, fixed_points_number=4, random_seed=None)
+    error = ring.simulate(time=100, plot=True)
