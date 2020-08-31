@@ -19,8 +19,9 @@ def calculate_weights(weights, fp_n=16, total_neurons=128):
 
 
 def circular_mean(angles): 
-      if not len(angles):
+      if np.isnan(angles).all():
           return np.nan
+
       a = np.array(angles) * np.pi / 180.  
       s = np.nanmean(np.sin(a)) 
       c = np.nanmean(np.cos(a)) 
