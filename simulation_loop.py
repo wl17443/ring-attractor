@@ -5,27 +5,15 @@ from utils import Counter
 from ring_attractor import RingAttractor
 
 
-# params = {
-#     "neurons_n": 256,
-#     "simulation_time": 10000,
-#     "iterations": 30,
-#     "noise_levels": 30,
-#     "noise_low": 0.0,
-#     "noise_high": 3.0e-3,
-#     "weights": [0.050, 0.100, 0.050, 0.250],  # ext, inh, fp ext, inh
-#     "fixed_points": [0, 1, 2, 4, 8, 16, 32]
-# }
-
-# Dummy params
 params = {
-    "neurons_n": 32,
-    "simulation_time": 100,
-    "iterations": 2,
-    "noise_levels": 3,
+    "neurons_n": 256,
+    "simulation_time": 10000,
+    "iterations": 30,
+    "noise_levels": 30,
     "noise_low": 0.0,
     "noise_high": 3.0e-3,
     "weights": [0.050, 0.100, 0.050, 0.250],  # ext, inh, fp ext, inh
-    "fixed_points": [0, 1, 2, 4]
+    "fixed_points": [0, 1, 2, 4, 8, 16, 32]
 }
 
 
