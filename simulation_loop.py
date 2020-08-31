@@ -5,12 +5,12 @@ from ring_attractor import RingAttractor
 
 ### Parameters
 neurons_n = 256
-time = 100
-iterations = 2
+time = 10000
+iterations = 30
 
-noise_levels = 15
+noise_levels = 30
 noise_low = 0.0
-noise_high = 1.5e-3
+noise_high = 3.0e-3
 
 weights = [0.050, 0.100, 0.050, 0.250]  # ext, inh, fp ext, inh
 fixed_points = [0, 1, 2, 4, 8, 16, 32]
@@ -46,5 +46,5 @@ if __name__ == "__main__":
         records[it_n].loc[fp_idx, noise_idx] = error
 
     for i, df in enumerate(records):
-        df.to_csv("csv/errors__seed_{}.csv".format(seeds[i]))
+        df.to_csv("csv/errors_seed_{}.csv".format(seeds[i]))
         # TODO take mean across all records
