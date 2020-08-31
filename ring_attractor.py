@@ -49,7 +49,6 @@ class RingAttractor:
 
         if plot:
             plot_potentials(df, self.noise, self.weights,
-                            self.fixed_points, e, time,self.fp_width)
                 self.fixed_points, e, time, self.fp_width, self.random_seed)
             self.flushed = 1
         return e
