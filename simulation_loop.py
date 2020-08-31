@@ -26,7 +26,7 @@ seeds = np.random.choice(10000, iterations)
 
 
 def iteration(_noise, noise_idx, _fp_n, fp_idx, it_n):
-    ring = RingAttractor(n=neurons_n, noise=_noise, weights=weights, fixed_points_number=_fp_n, time=time, random_seed=seeds[it])
+    ring = RingAttractor(n=neurons_n, noise=_noise, weights=weights, fixed_points_number=_fp_n, time=time, random_seed=seeds[it_n])
     e = ring.simulate()
 
     return e, noise_idx, fp_idx, it_n
@@ -46,5 +46,5 @@ if __name__ == "__main__":
         records[it_n].loc[fp_idx, noise_idx] = error
 
     for i, df in enumerate(records):
-        df.to_csv("csv/errors_it_{}_seed_{}.csv".format(i, seeds[i]))
+        df.to_csv("csv/errors__seed_{}.csv".format(seeds[i]))
         # TODO take mean across all records
