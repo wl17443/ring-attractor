@@ -17,10 +17,10 @@ fixed_points = [0, 1, 2, 4, 8, 16, 32]
 ###
 
 noises = np.linspace(noise_low, noise_high, noise_levels)
-noises_idx = ["{:.2E}".format(i) for i in noises]
+noises_idx = ["{:.2e}".format(i) for i in noises]
 fixed_points_idx = [str(i) for i in fixed_points]
 
-records = [pd.DataFrame(index=fixed_points_idx, columns=noises_idx) for _ in noises]
+records = [pd.DataFrame(index=fixed_points_idx, columns=noises_idx) for _ in iterations]
 results = []
 seeds = np.random.choice(10000, iterations)
 
