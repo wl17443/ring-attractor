@@ -1,7 +1,6 @@
 import concurrent.futures
 import numpy as np
 import pandas as pd
-from utils import Counter
 from ring_attractor import RingAttractor
 
 
@@ -17,7 +16,7 @@ params = {
 }
 
 
-def simulation(parameters, _noise, noise_idx, _fp_n, it_n, counter):
+def simulation(parameters, _noise, noise_idx, _fp_n, it_n):
 
     ring = RingAttractor(n=parameters["neurons_n"],
                          noise=_noise,
@@ -27,30 +26,26 @@ def simulation(parameters, _noise, noise_idx, _fp_n, it_n, counter):
                          random_seed=seeds[it_n])
 
     e = ring.simulate()
-    counter.inc()
 
     return e, noise_idx, _fp_n, it_n
 
 
-noises = np.linspace(
-    params["noise_low"], params["noise_high"], params["noise_levels"])
+noises = np.linspace( params["noise_low"], params["noise_high"], params["noise_levels"])
 noises_idx = ["{:.2e}".format(i) for i in noises]
 
-records = [pd.DataFrame(index=params["fixed_points"], columns=noises_idx)
-           for _ in range(params["iterations"])]
+records = [pd.DataFrame(index=params["fixed_points"], columns=noises_idx) for _ in range(params["iterations"])]
 seeds = np.random.choice(10000, params["iterations"])
-counter = Counter(params)
 results = []
 
 
-with concurrent.futures.ThreadPoolExecutor() as executor:
+with concurrent.futures.ProcessPoolExecutor() as executor:
 
     for it in range(params["iterations"]):
         for noise_idx, noise in zip(noises_idx, noises):
             for fp_n in params["fixed_points"]:
 
                 results.append(executor.submit(
-                    simulation, params, noise, noise_idx, fp_n, it, counter))
+                    simulation, params, noise, noise_idx, fp_n, it))
 
 
 for f in concurrent.futures.as_completed(results):

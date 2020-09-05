@@ -27,20 +27,6 @@ def circular_mean(angles):
         return np.arctan(s/c) * 180. / np.pi
 
 
-class Counter:
-    def __init__(self, params):
-        self.n = 0
-        self.start = time.time()
-        self.total_it = params["noise_levels"] * \
-            params["iterations"] * len(params["fixed_points"])
-
-    def inc(self):
-        self.n += 1
-        print("Completed simulation {}/{} in {:.2f} seconds".format(self.n,
-                                                                      self.total_it, time.time() - self.start), end="\r")
-
-
-
 
 def plot_errors(csv_name):
     _, ax = plt.subplots(figsize=(10, 10))
