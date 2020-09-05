@@ -31,46 +31,50 @@ Vr	lif_model.py	/^    Vr = -80.0 * mV  # Reset potential$/;"	v	class:LIF
 Vthr	lif_model.py	/^    Vthr = -48.0 * mV  # Threshold potential$/;"	v	class:LIF
 What we have done	README.md	/^## What we have done$/;"	s	chapter:Ring Attractor Network
 Yet to do	README.md	/^## Yet to do$/;"	s	chapter:Ring Attractor Network
-__init__	lif_model.py	/^    def __init__(self, ID, dt=1, noise_mean=0, noise_std=1):$/;"	m	class:LIF
+__init__	lif_model.py	/^    def __init__(self, ID, angle, dt=1, noise_mean=0, noise_std=1):$/;"	m	class:LIF
 __init__	ring_attractor.py	/^    def __init__(self,$/;"	m	class:RingAttractor
 calculate_weights	utils.py	/^def calculate_weights(weights, fp_n=16, total_neurons=128):$/;"	f
-compute_gain	utils.py	/^def compute_gain(potentials, mid_point):$/;"	f
+circular_mean	utils.py	/^def circular_mean(angles):$/;"	f
+compute_loss	ring_attractor.py	/^    def compute_loss(self, potentials):$/;"	m	class:RingAttractor
 connect_with_fixed_points	ring_attractor.py	/^    def connect_with_fixed_points(self):$/;"	m	class:RingAttractor
 dV	lif_model.py	/^    def dV(self):$/;"	m	class:LIF
+df_average	simulation_loop.py	/^df_average = full_df.groupby(full_df.index).mean()$/;"	v
 error	ring_attractor.py	/^    error = ring.simulate()$/;"	v
-errors	simulation_loop.py	/^        errors = []$/;"	v
-fixed_points	simulation_loop.py	/^fixed_points = [0, 1, 2, 4, 8, 16, 32]$/;"	v
-fixed_points_idx	simulation_loop.py	/^fixed_points_idx = [str(i) for i in fixed_points]$/;"	v
+error	simulation_loop.py	/^        error, noise_idx, fp_idx, it_n = f.result()$/;"	v
+fp_idx	simulation_loop.py	/^        error, noise_idx, fp_idx, it_n = f.result()$/;"	v
+full_df	simulation_loop.py	/^full_df = pd.concat(records).astype(float)$/;"	v
+futures	simulation_loop.py	/^futures = []$/;"	v
 get_fixed_points	ring_attractor.py	/^    def get_fixed_points(self):$/;"	m	class:RingAttractor
 get_mid_point	ring_attractor.py	/^    def get_mid_point(self):$/;"	m	class:RingAttractor
-input_source	ring_attractor.py	/^    def input_source(self, mid_point, n_of_spikes, weight, begin_time, neuron, time):$/;"	m	class:RingAttractor
-iteration	simulation_loop.py	/^def iteration(_noise, _fp_n): $/;"	f
-iterations	simulation_loop.py	/^iterations = 30$/;"	v
+input_source	ring_attractor.py	/^    def input_source(self, n_of_spikes, begin, neuron, time):$/;"	m	class:RingAttractor
+it_n	simulation_loop.py	/^        error, noise_idx, fp_idx, it_n = f.result()$/;"	v
 mV	lif_model.py	/^mV = 1e-3$/;"	v
 ms	lif_model.py	/^ms = 1e-3$/;"	v
 nF	lif_model.py	/^nF = 1e-9$/;"	v
-neurons_n	simulation_loop.py	/^neurons_n = 256$/;"	v
 noise	lif_model.py	/^    def noise(self):$/;"	m	class:LIF
-noise_levels	simulation_loop.py	/^noise_levels = 30$/;"	v
-noises	simulation_loop.py	/^noises = np.linspace(0.0e-3, 3.0e-3, noise_levels)$/;"	v
-noises_idx	simulation_loop.py	/^noises_idx = ["{:.2E}".format(i) for i in noises]$/;"	v
+noise_idx	simulation_loop.py	/^        error, noise_idx, fp_idx, it_n = f.result()$/;"	v
+noises	simulation_loop.py	/^noises = np.linspace( params["noise_low"], params["noise_high"], params["noise_levels"])$/;"	v
+noises_idx	simulation_loop.py	/^noises_idx = ["{:.2e}".format(i) for i in noises]$/;"	v
 np	ring_attractor.py	/^import numpy as np$/;"	I
 np	simulation_loop.py	/^import numpy as np$/;"	I
 np	utils.py	/^import numpy as np$/;"	I
+params	simulation_loop.py	/^params = {$/;"	v
+pd	ring_attractor.py	/^import pandas as pd$/;"	I
 pd	simulation_loop.py	/^import pandas as pd$/;"	I
 pd	utils.py	/^import pandas as pd$/;"	I
 plot_errors	utils.py	/^def plot_errors(csv_name):$/;"	f
-plot_potentials	utils.py	/^def plot_potentials(df, noise, weights, fixed_points, error, time):$/;"	f
+plot_potentials	ring_attractor.py	/^    def plot_potentials(self, df, err):$/;"	m	class:RingAttractor
+plt	ring_attractor.py	/^import matplotlib.pyplot as plt$/;"	I
 plt	utils.py	/^import matplotlib.pyplot as plt$/;"	I
-records	simulation_loop.py	/^records = pd.DataFrame(index=fixed_points_idx, columns=noises_idx)$/;"	v
-results	simulation_loop.py	/^            results = [executor.submit(iteration, noise, fp_n) for _ in range(iterations)]$/;"	v
-ring	ring_attractor.py	/^    ring = RingAttractor(n=32, noise=3e-3, weights=(0.050, 0.088, 0.050, 0.250), fixed_points_nu/;"	v
+records	simulation_loop.py	/^records = [pd.DataFrame(index=params["fixed_points"], columns=noises_idx) for _ in range(params[/;"	v
+ring	ring_attractor.py	/^    ring = RingAttractor(n=256, noise=1.5e-3, weights=(0.050, 0.100, 0.050, 0.250), fixed_points/;"	v
+seeds	simulation_loop.py	/^seeds = np.random.choice(10000, params["iterations"])$/;"	v
 simulate	ring_attractor.py	/^    def simulate(self):$/;"	m	class:RingAttractor
+simulation	simulation_loop.py	/^def simulation(parameters, _noise, noise_idx, _fp_n, it_n):$/;"	f
+sns	ring_attractor.py	/^import seaborn as sns$/;"	I
 sns	utils.py	/^import seaborn as sns$/;"	I
 step	lif_model.py	/^    def step(self):$/;"	m	class:LIF
 tau_m	lif_model.py	/^    tau_m = 5.0 * ms  # Membrane time constant$/;"	v	class:LIF
 tau_ref	lif_model.py	/^    tau_ref = 2.0 * ms$/;"	v	class:LIF
 tau_syn_exc	lif_model.py	/^    tau_syn_exc = 5.0 * ms$/;"	v	class:LIF
 tau_syn_inh	lif_model.py	/^    tau_syn_inh = 5.0 * ms$/;"	v	class:LIF
-time	simulation_loop.py	/^time = 10000$/;"	v
-weights	simulation_loop.py	/^weights = [0.050, 0.088, 0.050, 0.25]  # ext, inh, fp ext, inh$/;"	v
