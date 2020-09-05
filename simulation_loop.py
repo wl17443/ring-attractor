@@ -1,6 +1,7 @@
-import concurrent.futures
+from concurrent.futures import ProcessPoolExecutor
 import numpy as np
 import pandas as pd
+from tqdm import tqdm
 from ring_attractor import RingAttractor
 
 
@@ -35,22 +36,26 @@ noises_idx = ["{:.2e}".format(i) for i in noises]
 
 records = [pd.DataFrame(index=params["fixed_points"], columns=noises_idx) for _ in range(params["iterations"])]
 seeds = np.random.choice(10000, params["iterations"])
-results = []
+futures = []
 
 
-with concurrent.futures.ProcessPoolExecutor() as executor:
+with ProcessPoolExecutor() as executor:
+
 
     for it in range(params["iterations"]):
         for noise_idx, noise in zip(noises_idx, noises):
             for fp_n in params["fixed_points"]:
 
-                results.append(executor.submit(
-                    simulation, params, noise, noise_idx, fp_n, it))
+                futures.append(executor.submit(simulation, params, noise, noise_idx, fp_n, it))
 
+    
+    for f in tqdm(futures):
+        error, noise_idx, fp_idx, it_n = f.result()
+        records[it_n].loc[fp_idx, noise_idx] = error
 
-for f in concurrent.futures.as_completed(results):
-    error, noise_idx, fp_idx, it_n = f.result()
-    records[it_n].loc[fp_idx, noise_idx] = error
+# for f in concurrent.futures.as_completed(results):
+#     error, noise_idx, fp_idx, it_n = f.result()
+#     records[it_n].loc[fp_idx, noise_idx] = error
 
 for i, df in enumerate(records):
     df.to_csv("csv/singular_iters/seed_{}.csv".format(seeds[i]))
