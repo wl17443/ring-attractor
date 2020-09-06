@@ -150,6 +150,12 @@ class RingAttractor:
         _, ax = plt.subplots(figsize=(10, 10))
         sns.heatmap(df, vmin=-0.08, vmax=0.0, cmap="viridis", xticklabels=int(self.time/10),
                     yticklabels=10, cbar_kws={'label': "Membrane Potential (V)"}, ax=ax)
+
+
+        for target in np.arange(0,len(self.fixed_points),self.fp_width):
+            cur_fixed_point = np.mean(self.fixed_points[target:(target+self.fp_width)])
+            plt.plot([0,self.time],[cur_fixed_point,cur_fixed_point],color='k')
+
         plt.xlabel("Time (ms)")
         plt.ylabel("Orientation of neuron")
         plt.subplots_adjust(left=0.07, bottom=0.07, right=0.97, top=0.88)
@@ -166,5 +172,5 @@ class RingAttractor:
 if __name__ == "__main__":
 
     # np.random.seed(42)
-    ring = RingAttractor(n=256, noise=1.5e-3, weights=(0.050, 0.100, 0.050, 0.250), fixed_points_number=1, time=10000, plot=True, random_seed=None)
+    ring = RingAttractor(n=256, noise=1.5e-3, weights=(0.050, 0.100, 0.050, 0.250), fixed_points_number=32, time=100, plot=True, random_seed=None)
     error = ring.simulate()
