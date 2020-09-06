@@ -1,7 +1,7 @@
 #!/bin/bash
 
-n=$(ls ../backup | wc -l)
-mkdir ../backup/batch_$n
+n=$(ls ../backups | wc -l)
+mkdir -p ../backups/batch_$n/analysis
 
-mv means.csv ../backup/batch_$n
-mv singular_iters/seed_* ..backup/batch_$n
+mv means.csv ../backups/batch_$n
+mv singular_iters/seed_* ../backups/batch_$n
