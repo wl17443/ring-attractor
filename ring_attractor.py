@@ -12,7 +12,7 @@ class RingAttractor:
     "A self-contained class for the ring attractor"
 
     def __init__(self,
-                 n=128,
+                 n=256,
                  noise=2.0e-3,
                  weights=(0.050, 0.100, 0.050, 0.250),
                  fixed_points_number=0,
@@ -30,7 +30,7 @@ class RingAttractor:
         self.neurons = [LIF(ID=i, angle=360.0/n*i, noise_mean=0, noise_std=self.noise,) for i in range(n)]
         self.fp_width = 3
         self.fixed_points = self.get_fixed_points()
-        self.mid_point = self.get_mid_point()
+        self.mid_point = n // 2
 
         self.connect_with_fixed_points()
         self.flushed = 0
@@ -74,6 +74,7 @@ class RingAttractor:
 
         return df, err
 
+
     def input_source(self, n_of_spikes, begin, neuron, time):
         sources = [i for i in range(self.mid_point - 2, self.mid_point + 3)]
 
@@ -83,6 +84,7 @@ class RingAttractor:
                     neuron.exc_ps_td.append(
                         ((time - begin) * 1e-3, self.weights[0]))
                     
+
     def flush(self,neurons=True,fixed_points=True,connections=True):
         # Reset the model so simulations can be re-run without carrying 
         # activity over
@@ -126,25 +128,18 @@ class RingAttractor:
         if self.fp_n == 0:
             return []
 
+        if self.fp_n == 1:
+            return [x for x in range(self.fp_width)]
+
         index = np.arange(self.n)
         interval = self.n // self.fp_n
 
-        distances = index % interval
+        dist = index % interval
+        low = interval // 2 - self.fp_width // 2
+        high = interval // 2 + self.fp_width // 2
         
-        return np.where(distances < self.fp_width)[0]
+        return index[(dist >= low) & (dist <= high)]
 
-    def get_mid_point(self):
-        if self.fp_n <= 1:
-            return self.n // 2
-
-        free_points = set(np.arange(self.n)) - set(self.fixed_points)
-        median = [*free_points][len(free_points) // 4]
-
-        high = self.fixed_points[self.fixed_points > median][0]
-        low = self.fixed_points[self.fixed_points < median][-1]
-        mid_point = (high + low) // 2
-
-        return mid_point
 
     def plot_potentials(self, df, err):
         _, ax = plt.subplots(figsize=(10, 10))
