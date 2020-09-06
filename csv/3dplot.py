@@ -17,8 +17,10 @@ Z = np.reshape(df.values.flatten(), X.shape)
 fig = plt.figure()
 ax = plt.axes(projection="3d")
 ax.plot_surface(X, Y, Z)
-ax.set_xlabel('Fixed points')
+ax.set_xlabel('Fixed points') #TODO is this ordered?
 ax.set_ylabel('Noise')
 ax.set_zlabel('Error')
 # ax.plot_wireframe(X, Y, Z)
 plt.show()
+
+
