@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from utils import circular_mean
 from lif_model import LIF
+import warnings
 
 
 class RingAttractor:
@@ -26,18 +27,21 @@ class RingAttractor:
         self.time = time
         self.plot = plot
         self.random_seed = random_seed
-
         self.neurons = [LIF(ID=i, angle=360.0/n*i, noise_mean=0, noise_std=self.noise,) for i in range(n)]
-
+        self.fp_width = 3
         self.fixed_points = self.get_fixed_points()
         self.mid_point = self.get_mid_point()
 
         self.connect_with_fixed_points()
+        self.flushed = 0
 
         if random_seed:
-            np.random.seed(random_seed)
+            np.random.seed(self.random_seed)
 
     def simulate(self):
+        if self.flushed == 1:
+            warnings.warn("Simulation has not been flushed!")
+
         potentials = [[] for _ in range(self.n)]
         for t in range(self.time):
             for neuron in self.neurons:
@@ -78,6 +82,19 @@ class RingAttractor:
                 for _ in range(n_of_spikes):
                     neuron.exc_ps_td.append(
                         ((time - begin) * 1e-3, self.weights[0]))
+                    
+    def flush(self,neurons=True,fixed_points=True,connections=True):
+        # Reset the model so simulations can be re-run without carrying 
+        # activity over
+        if neurons:
+            self.neurons = [LIF(ID, noise_mean=0, noise_std=self.noise)
+                            for ID in range(self.n)]
+        if fixed_points:
+            self.fixed_points=self.get_fixed_points()
+        if connections:
+            self.connect_with_fixed_points()
+        self.flushed = 0
+        
 
     def connect_with_fixed_points(self):
         for neur in self.neurons:
@@ -113,7 +130,8 @@ class RingAttractor:
         interval = self.n // self.fp_n
 
         distances = index % interval
-        return np.where(distances < 3)[0]
+        
+        return np.where(distances < self.fp_width)[0]
 
     def get_mid_point(self):
         if self.fp_n <= 1:
@@ -142,6 +160,7 @@ class RingAttractor:
         plt.savefig(
             f"images/{datetime.now().strftime('%d-%m-%Y, %H:%M:%S')}.png")
         plt.show()
+
 
 
 if __name__ == "__main__":
