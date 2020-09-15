@@ -73,10 +73,10 @@ class RingAttractor:
         spikes = spikes.apply(lambda x: x * x.index)
         spikes = spikes.replace(0, np.nan)
 
-        start = spikes.loc[:, :self.time/2-1].values.flatten()
+        start = spikes.loc[:, :self.time/3-1].values.flatten()
         start = start[~np.isnan(start)]
 
-        end = spikes.loc[:, self.time/2:].values.flatten()
+        end = spikes.loc[:, self.time/3*2:].values.flatten()
         end = end[~np.isnan(end)]
 
         start_fit = vonmises.fit(start, fscale=start.std())
