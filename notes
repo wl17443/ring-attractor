@@ -1,0 +1,8 @@
+von mises fit on first x seconds and last x seconds
+
+take the k-l divergence (super fucking careful) between the 2 and this will be new error metric
+
+for every fp-N plot error x noise with mean plotted enveloped in std
+
+	Peter Latham
+	Neil Burgess

@@ -18,7 +18,8 @@ class RingAttractor:
                  fixed_points_number=0,
                  time=1000,
                  plot=False,
-                 random_seed=None):
+                 random_seed=None,
+                 return_df=False):
 
         self.n = n
         self.noise = noise
@@ -26,6 +27,7 @@ class RingAttractor:
         self.fp_n = fixed_points_number
         self.time = time
         self.plot = plot
+        self.return_df = return_df
         self.random_seed = random_seed
         self.neurons = [LIF(ID=i, angle=360.0/n*i, noise_mean=0, noise_std=self.noise,) for i in range(n)]
         self.fp_width = 3
@@ -55,6 +57,9 @@ class RingAttractor:
 
         if self.plot:
             self.plot_potentials(df, err)
+
+        if self.return_df:
+            return df, err
 
         return err
 
