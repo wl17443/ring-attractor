@@ -8,7 +8,7 @@ from ring_attractor import RingAttractor
 params = {
     "neurons_n": 256,
     "simulation_time": 10000,
-    "iterations": 10,
+    "iterations": 30,
     "noise_levels": 80,
     "noise_low": 0.0,
     "noise_high": 8e-4,

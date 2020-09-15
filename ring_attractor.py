@@ -1,11 +1,12 @@
+import warnings
 from datetime import datetime
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
 import seaborn as sns
+import matplotlib.pyplot as plt
+from scipy.stats import vonmises, entropy
 from utils import circular_mean
 from lif_model import LIF
-import warnings
 
 
 class RingAttractor:
@@ -68,16 +69,43 @@ class RingAttractor:
         df.index = [self.neurons[i].angle for i in df.index]
         spikes = df == 0.0
 
-        spikes = spikes.iloc[:, -30:]
         spikes = spikes.astype(int)
         spikes = spikes.apply(lambda x: x * x.index)
         spikes = spikes.replace(0, np.nan)
 
-        means = spikes.apply(circular_mean, axis=0)
-        total_mean = circular_mean(means)
-        err = np.abs(self.neurons[self.mid_point].angle - total_mean)
+        start = spikes.loc[:, :self.time/2-1].values.flatten()
+        start = start[~np.isnan(start)]
+
+        end = spikes.loc[:, self.time/2:].values.flatten()
+        end = end[~np.isnan(end)]
+
+        start_fit = vonmises.fit(start, fscale=start.std())
+        end_fit = vonmises.fit(end, fscale=end.std())
+
+        start_aprx = vonmises.rvs(*start_fit, size=100000)
+        end_aprx = vonmises.rvs(*end_fit, size=100000)
+
+        err = entropy(start_aprx, end_aprx)
+
+        df.index = df.index.astype(int)
 
         return df, err
+
+
+        # df = pd.DataFrame(potentials)
+        # df.index = [self.neurons[i].angle for i in df.index]
+        # spikes = df == 0.0
+
+        # spikes = spikes.iloc[:, -30:]
+        # spikes = spikes.astype(int)
+        # spikes = spikes.apply(lambda x: x * x.index)
+        # spikes = spikes.replace(0, np.nan)
+
+        # means = spikes.apply(circular_mean, axis=0)
+        # total_mean = circular_mean(means)
+        # err = np.abs(self.neurons[self.mid_point].angle - total_mean)
+
+        # return df, err
 
 
     def input_source(self, n_of_spikes, begin, neuron, time):
@@ -149,7 +177,7 @@ class RingAttractor:
     def plot_potentials(self, df, err):
         _, ax = plt.subplots(figsize=(10, 10))
         sns.heatmap(df, vmin=-0.08, vmax=0.0, cmap="viridis", xticklabels=int(self.time/10),
-                    yticklabels=10, cbar_kws={'label': "Membrane Potential (V)"}, ax=ax)
+                    yticklabels=12, cbar_kws={'label': "Membrane Potential (V)"}, ax=ax)
 
 
         for target in np.arange(0,len(self.fixed_points),self.fp_width):
@@ -157,10 +185,10 @@ class RingAttractor:
             plt.plot([0,self.time],[cur_fixed_point,cur_fixed_point],color='k')
 
         plt.xlabel("Time (ms)")
-        plt.ylabel("Orientation of neuron")
+        plt.ylabel("Orientation of neuron (degrees)")
         plt.subplots_adjust(left=0.07, bottom=0.07, right=0.97, top=0.88)
 
-        ax.set_title("Number of fixed points: {}\nNoise: {:.3e}\nWeights: {}\nError: {:.3f}\nRandom seed: {}".format(
+        ax.set_title("Number of fixed points: {}\nNoise: {:.3e}\nWeights: {}\nDivergence: {:.3e}\nRandom seed: {}".format(
             self.fp_n, self.noise, self.weights, err, self.random_seed))
 
         plt.savefig(
@@ -172,5 +200,5 @@ class RingAttractor:
 if __name__ == "__main__":
 
     # np.random.seed(42)
-    ring = RingAttractor(n=256, noise=1.5e-3, weights=(0.050, 0.100, 0.050, 0.250), fixed_points_number=32, time=100, plot=True, random_seed=None)
+    ring = RingAttractor(n=256, noise=2.0e-3, weights=(0.050, 0.100, 0.050, 0.250), fixed_points_number=0, time=5000, plot=True, random_seed=42)
     error = ring.simulate()
