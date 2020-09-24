@@ -122,8 +122,8 @@ class RingAttractor:
         # Reset the model so simulations can be re-run without carrying 
         # activity over
         if neurons:
-            self.neurons = [LIF(ID, noise_mean=0, noise_std=self.noise)
-                            for ID in range(self.n)]
+            self.neurons = [LIF(ID=i, angle=360.0/n*i, noise_mean=0, noise_std=self.noise)
+                            for i in range(self.n)]
         if fixed_points:
             self.fixed_points=self.get_fixed_points()
         if connections:
