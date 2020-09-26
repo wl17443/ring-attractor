@@ -54,15 +54,15 @@ class RingAttractor:
                 neuron.step()
                 potentials[neuron.id].append(neuron.V)
 
-        df, err = self.compute_loss(potentials)
+        df, err, err2 = self.compute_loss(potentials)
 
         if self.plot:
-            self.plot_potentials(df, err)
+            self.plot_potentials(df, err, err2)
 
         if self.return_df:
             return df, err
 
-        return err
+        return err 
 
     def compute_loss(self, potentials):
         df = pd.DataFrame(potentials)
@@ -73,11 +73,18 @@ class RingAttractor:
         spikes = spikes.apply(lambda x: x * x.index)
         spikes = spikes.replace(0, np.nan)
 
-        start = spikes.loc[:, :self.time/3-1].values.flatten()
+        start = spikes.iloc[:, :self.time//3].values.flatten()
         start = start[~np.isnan(start)]
 
-        end = spikes.loc[:, self.time/3*2:].values.flatten()
+        end = spikes.iloc[:, -self.time//3:].values.flatten()
         end = end[~np.isnan(end)]
+
+        if start.size < end.size:
+            end = end[:start.size]
+        elif end.size < start.size:
+            start = start[:end.size]
+
+        assert start.size == end.size, f"start size {start.size}, end size {end.size}"
 
         start_fit = vonmises.fit(start, fscale=start.std())
         end_fit = vonmises.fit(end, fscale=end.std())
@@ -86,10 +93,11 @@ class RingAttractor:
         end_aprx = vonmises.rvs(*end_fit, size=100000)
 
         err = entropy(start_aprx, end_aprx)
+        err2 = entropy(start, end)
 
         df.index = df.index.astype(int)
 
-        return df, err
+        return df, err, err2
 
 
         # df = pd.DataFrame(potentials)
@@ -174,7 +182,7 @@ class RingAttractor:
         return index[(dist >= low) & (dist <= high)]
 
 
-    def plot_potentials(self, df, err):
+    def plot_potentials(self, df, err, err2):
         _, ax = plt.subplots(figsize=(10, 10))
         sns.heatmap(df, vmin=-0.08, vmax=0.0, cmap="viridis", xticklabels=int(self.time/10),
                     yticklabels=12, cbar_kws={'label': "Membrane Potential (V)"}, ax=ax)
@@ -188,8 +196,8 @@ class RingAttractor:
         plt.ylabel("Orientation of neuron (degrees)")
         plt.subplots_adjust(left=0.07, bottom=0.07, right=0.97, top=0.88)
 
-        ax.set_title("Number of fixed points: {}\nNoise: {:.3e}\nWeights: {}\nDivergence: {:.3e}\nRandom seed: {}".format(
-            self.fp_n, self.noise, self.weights, err, self.random_seed))
+        ax.set_title("Number of fixed points: {}\nNoise: {:.3e}\nWeights: {}\nDivergence: {:.6e}\nRaw Divergence: {:.6e}\nRandom seed: {}".format(
+            self.fp_n, self.noise, self.weights, err, err2, self.random_seed))
 
         plt.savefig(
             f"images/{datetime.now().strftime('%d-%m-%Y, %H:%M:%S')}.png")
@@ -200,5 +208,5 @@ class RingAttractor:
 if __name__ == "__main__":
 
     # np.random.seed(42)
-    ring = RingAttractor(n=256, noise=2.0e-3, weights=(0.050, 0.100, 0.050, 0.250), fixed_points_number=0, time=5000, plot=True, random_seed=42)
+    ring = RingAttractor(n=256, noise=2.0e-3, weights=(0.050, 0.100, 0.050, 0.250), fixed_points_number=0, time=50, plot=True, random_seed=42)
     error = ring.simulate()
