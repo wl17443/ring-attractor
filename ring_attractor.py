@@ -5,7 +5,6 @@ import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
 from scipy.stats import vonmises, entropy
-from utils import circular_mean
 from lif_model import LIF
 
 
@@ -19,8 +18,7 @@ class RingAttractor:
                  fixed_points_number=0,
                  time=1000,
                  plot=False,
-                 random_seed=None,
-                 return_df=False):
+                 random_seed=None,):
 
         self.n = n
         self.noise = noise
@@ -28,7 +26,6 @@ class RingAttractor:
         self.fp_n = fixed_points_number
         self.time = time
         self.plot = plot
-        self.return_df = return_df
         self.random_seed = random_seed
         self.neurons = [LIF(ID=i, angle=360.0/n*i, noise_mean=0, noise_std=self.noise,) for i in range(n)]
         self.fp_width = 3
@@ -36,84 +33,87 @@ class RingAttractor:
         self.mid_point = n // 2
 
         self.connect_with_fixed_points()
-        self.flushed = 0
+        self.flushed = True
+        self.raw_data = None
+        self.spikes = None
 
         if random_seed:
             np.random.seed(self.random_seed)
 
     def simulate(self):
-        if self.flushed == 1:
+        if self.flushed == False:
             warnings.warn("Simulation has not been flushed!")
 
         potentials = [[] for _ in range(self.n)]
         for t in range(self.time):
             for neuron in self.neurons:
 
-                self.input_source(n_of_spikes=5, begin=0,
-                                  neuron=neuron, time=t)
+                self.input_source(n_of_spikes=5, begin=0, neuron=neuron, time=t)
                 neuron.step()
                 potentials[neuron.id].append(neuron.V)
 
-        df, err, err2 = self.compute_loss(potentials)
+
+        self.process_potentials(potentials)
+        divergence = self.kl_divergence(start_1=0, 
+                                        start_2=self.time//3*2, 
+                                        lenght=self.time//3,
+                                        fit_von_mises=True)
 
         if self.plot:
-            self.plot_potentials(df, err, err2)
+            self.plot_potentials(divergence)
 
-        if self.return_df:
-            return df, err
+        return divergence 
 
-        return err 
+    def process_potentials(self, potentials):
+        data = pd.DataFrame(potentials)
+        data.index = [self.neurons[i].angle for i in data.index]
+        data.index = data.index.astype(int)
 
-    def compute_loss(self, potentials):
-        df = pd.DataFrame(potentials)
-        df.index = [self.neurons[i].angle for i in df.index]
-        spikes = df == 0.0
-
+        spikes = data == 0.0
         spikes = spikes.astype(int)
         spikes = spikes.apply(lambda x: x * x.index)
         spikes = spikes.replace(0, np.nan)
 
-        start = spikes.iloc[:, :self.time//3].values.flatten()
-        start = start[~np.isnan(start)]
+        self.raw_data = data.copy()
+        self.spikes = spikes.copy()
 
-        end = spikes.iloc[:, -self.time//3:].values.flatten()
-        end = end[~np.isnan(end)]
+        self.flushed = False
 
-        if start.size < end.size:
-            end = end[:start.size]
-        elif end.size < start.size:
-            start = start[:end.size]
+    def kl_divergence(self, start_1, start_2, lenght, fit_von_mises=True):
+        """
+        Compute kl divergence between two slices of data
 
-        assert start.size == end.size, f"start size {start.size}, end size {end.size}"
+        Parameters
+        -----------
 
-        start_fit = vonmises.fit(start, fscale=start.std())
-        end_fit = vonmises.fit(end, fscale=end.std())
+        start_1 : where to start for the first slice
+        start_2 : where to start for the second slice
+        lenght : how long the slices should be
+        fit_von_mises : whether to fit the slices of data to a von mises distribution
 
-        start_aprx = vonmises.rvs(*start_fit, size=100000)
-        end_aprx = vonmises.rvs(*end_fit, size=100000)
+        """
 
-        err = entropy(start_aprx, end_aprx)
-        err2 = entropy(start, end)
+        slice_1 = self.spikes.iloc[:, start_1:start_1+lenght].values.flatten()
+        slice_1 = slice_1[~np.isnan(slice_1)]
 
-        df.index = df.index.astype(int)
+        slice_2 = self.spikes.iloc[:, start_2:start_2+lenght].values.flatten()
+        slice_2 = slice_2[~np.isnan(slice_2)]
 
-        return df, err, err2
+        if slice_1.size > slice_2.size:
+            slice_1 = slice_1[:slice_2.size]
+        elif slice_2.size > slice_1.size:
+            slice_2 = slice_2[:slice_1.size]
 
+        if fit_von_mises:
+            slice_1 = vonmises.fit(slice_1, fscale=slice_1.std())
+            slice_2 = vonmises.fit(slice_2, fscale=slice_2.std())
 
-        # df = pd.DataFrame(potentials)
-        # df.index = [self.neurons[i].angle for i in df.index]
-        # spikes = df == 0.0
+            slice_1 = vonmises.rvs(*slice_1, size=100000)
+            slice_2 = vonmises.rvs(*slice_2, size=100000)
 
-        # spikes = spikes.iloc[:, -30:]
-        # spikes = spikes.astype(int)
-        # spikes = spikes.apply(lambda x: x * x.index)
-        # spikes = spikes.replace(0, np.nan)
+        divergence = entropy(slice_1, slice_2)
 
-        # means = spikes.apply(circular_mean, axis=0)
-        # total_mean = circular_mean(means)
-        # err = np.abs(self.neurons[self.mid_point].angle - total_mean)
-
-        # return df, err
+        return divergence
 
 
     def input_source(self, n_of_spikes, begin, neuron, time):
@@ -127,16 +127,15 @@ class RingAttractor:
                     
 
     def flush(self,neurons=True,fixed_points=True,connections=True):
-        # Reset the model so simulations can be re-run without carrying 
-        # activity over
+        "Reset the model so simulations can be re-run without carrying activity over"
+
         if neurons:
-            self.neurons = [LIF(ID=i, angle=360.0/n*i, noise_mean=0, noise_std=self.noise)
-                            for i in range(self.n)]
+            self.neurons = [LIF(ID=i, angle=360.0/n*i, noise_mean=0, noise_std=self.noise,) for i in range(n)]
         if fixed_points:
             self.fixed_points=self.get_fixed_points()
         if connections:
             self.connect_with_fixed_points()
-        self.flushed = 0
+        self.flushed = True
         
 
     def connect_with_fixed_points(self):
@@ -182,9 +181,9 @@ class RingAttractor:
         return index[(dist >= low) & (dist <= high)]
 
 
-    def plot_potentials(self, df, err, err2):
+    def plot_potentials(self, err):
         _, ax = plt.subplots(figsize=(10, 10))
-        sns.heatmap(df, vmin=-0.08, vmax=0.0, cmap="viridis", xticklabels=int(self.time/10),
+        sns.heatmap(self.raw_data, vmin=-0.08, vmax=0.0, cmap="viridis", xticklabels=int(self.time/10),
                     yticklabels=12, cbar_kws={'label': "Membrane Potential (V)"}, ax=ax)
 
 
@@ -196,8 +195,8 @@ class RingAttractor:
         plt.ylabel("Orientation of neuron (degrees)")
         plt.subplots_adjust(left=0.07, bottom=0.07, right=0.97, top=0.88)
 
-        ax.set_title("Number of fixed points: {}\nNoise: {:.3e}\nWeights: {}\nDivergence: {:.6e}\nRaw Divergence: {:.6e}\nRandom seed: {}".format(
-            self.fp_n, self.noise, self.weights, err, err2, self.random_seed))
+        ax.set_title("Number of fixed points: {}\nNoise: {:.3e}\nWeights: {}\nDivergence: {:.6e}\nRandom seed: {}".format(
+            self.fp_n, self.noise, self.weights, err, self.random_seed))
 
         plt.savefig(
             f"images/{datetime.now().strftime('%d-%m-%Y, %H:%M:%S')}.png")
