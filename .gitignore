@@ -1,4 +1,5 @@
 __pycache__/
 images
 backups
+profiling
 .ipynb_checkpoints/
