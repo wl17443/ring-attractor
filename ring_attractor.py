@@ -5,7 +5,7 @@ import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
 from scipy.stats import vonmises, entropy
-from lif_model import LIF
+from numba_lif_model import LIF
 
 
 class RingAttractor:
@@ -27,7 +27,7 @@ class RingAttractor:
         self.time = time
         self.plot = plot
         self.random_seed = random_seed
-        self.neurons = [LIF(ID=i, angle=360.0/n*i, noise_mean=0, noise_std=self.noise,) for i in range(n)]
+        self.neurons = [LIF(ID=i, angle=360.0/n*i, noise_mean=0, noise_std=self.noise) for i in range(n)]
         self.fp_width = 3
         self.fixed_points = self.get_fixed_points()
         self.mid_point = n // 2
@@ -207,5 +207,5 @@ class RingAttractor:
 if __name__ == "__main__":
 
     # np.random.seed(42)
-    ring = RingAttractor(n=256, noise=2.0e-3, weights=(0.050, 0.100, 0.050, 0.250), fixed_points_number=0, time=50, plot=True, random_seed=42)
+    ring = RingAttractor(n=256, noise=2.0e-3, weights=(0.050, 0.100, 0.050, 0.250), fixed_points_number=0, time=500, plot=True, random_seed=42)
     error = ring.simulate()
