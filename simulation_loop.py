@@ -3,15 +3,17 @@ import numpy as np
 import pandas as pd
 from tqdm import tqdm
 from ring_attractor import RingAttractor
+from time import time
+
 
 
 params = {
     "neurons_n": 256,
     "simulation_time": 10000,
-    "iterations": 30,
-    "noise_levels": 80,
+    "iterations": 50,
+    "noise_levels": 300,
     "noise_low": 0.0,
-    "noise_high": 8e-4,
+    "noise_high": 3e-3,
     "weights": [0.050, 0.100, 0.050, 0.250],  # ext, inh, fp ext, inh
     "fixed_points": [0, 1, 2, 4, 8, 16, 32]
 }
@@ -39,6 +41,7 @@ seeds = np.random.choice(10000, params["iterations"])
 futures = []
 
 
+start = time()
 with ProcessPoolExecutor() as executor:
 
     for it in range(params["iterations"]):
@@ -52,6 +55,8 @@ with ProcessPoolExecutor() as executor:
         records[it_n].loc[fp_idx, noise_idx] = error
 
 
+end = time()
+print("time elapsed: ", end-start)
 for i, df in enumerate(records):
     df.to_csv("csv/seeds/seed_{}.csv".format(seeds[i]))
 
