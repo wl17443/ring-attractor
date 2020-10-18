@@ -18,7 +18,14 @@
 ### Meeting 3
 
 - [] Try to understand if being in a fixed point reduces the energy level of the network
-- [] Write a summary of what you did to calculate the noise where every fp_n situation is stable
-- [] Start looking into plasticity (easy stdp before, then clopath)
+- [x] Write a summary of what you did to calculate the noise where every fp_n situation is stable
+
+
+### Meet 4 
+
+- [] Analytic kl 
+- [] Compute divergence in sliding window 
+- [] We can compute lenght of vector of different in std, difference in mean, error between the two time points (not gaussian)
+- [] If bump drift too much terminate
 
 
