@@ -48,16 +48,17 @@ class RingAttractor:
         for t in range(self.time):
             for neuron in self.neurons:
 
-                self.input_source(n_of_spikes=5, begin=0, neuron=neuron, time=t)
+                # self.input_source(n_of_spikes=5, begin=0, neuron=neuron, time=t)
                 neuron.step()
                 potentials[neuron.id].append(neuron.V)
 
 
         self.process_potentials(potentials)
-        divergence = self.kl_divergence(start_1=0, 
-                                        start_2=self.time//3*2, 
-                                        lenght=self.time//3,
-                                        fit_von_mises=True)
+        # divergence = self.kl_divergence(start_1=0, 
+        #                                 start_2=self.time//3*2, 
+        #                                 lenght=self.time//3,
+        #                                 fit_von_mises=True)
+        divergence = 0
 
         if self.plot:
             self.plot_potentials(divergence)
@@ -207,5 +208,13 @@ class RingAttractor:
 if __name__ == "__main__":
 
     # np.random.seed(42)
-    ring = RingAttractor(n=256, noise=2.0e-3, weights=(0.050, 0.100, 0.050, 0.250), fixed_points_number=0, time=500, plot=True, random_seed=42)
+    # ring = RingAttractor(n=256, noise=2.0e-3, weights=(0.050, 0.100, 0.050, 0.250), fixed_points_number=0, time=500, plot=True, random_seed=42)
+    # error = ring.simulate()
+
+    import time
+    ring = RingAttractor(n=256, noise=0e-3, weights=(0.050, 0.100, 0.050, 0.250), fixed_points_number=0, time=10000, plot=False, random_seed=42)
+    start = time.time()
     error = ring.simulate()
+    end = time.time()
+
+    print(f"Time elapsed with python: {end-start} seconds") 

@@ -1,7 +1,4 @@
-# using Distributions
-# using Plots
 __revise_mode__ = :eval
-using BenchmarkTools
 using DifferentialEquations
 using StaticArrays
 
@@ -51,8 +48,8 @@ function normal_divergence(n1, n2)
 end
 
 
-function divergence(pot)
-    spikes = pot .== 0
+function divergence(V)
+    spikes = V .== 0
     spikes = broadcast(*, spikes, [1:1:np.N;])
     slice_1 = spikes[:, 1:3000]
     slice_1 = reshape(slice_1, :)
@@ -94,8 +91,13 @@ function make_connectivity_matrix(sp::SynapseParameters, np::NeuronParameters)
     
     cm .*= np.kₛ .* 1e-6
     cm[cm .< 0] .*= -(1 - np.Eᵢ)
-    return cm
+	return SMatrix{np.N, np.N}(cm)
 end
+
+
+
+
+
 
 
 ### Block of 3 functions to simulate network ###
@@ -103,36 +105,37 @@ end
 
 # This function initializes all the needed arrays
 function simulate(time, cm, np, dt)
-    pot = zeros(np.N, time)
-	spike_delays = zeros(np.N, time) .+ [dt:dt:dt*time;]'
+	V = MMatrix{np.N, time}(zeros(np.N, time))
+	sd = MMatrix{np.N, time}(zeros(np.N, time))
+	sd .+= [dt:dt:dt*time;]'
 
-	spike_delays .+= 2.
-    pot[:, 1] .= np.Vᵣ
+	sd .+= 2.
+    V[:, 1] .= np.Vᵣ
 
 	# give current
     for t in 1:time-3
-        step!(pot, spike_delays, t, cm, np, dt)
+        step!(V, sd, t, cm, np, dt)
 	
     end
     
-    pot
+    V
 end
 
 
-# This function checks for spikes, update one column of the potentials and of spike delays
-function step!(potentials, spike_delays, t, cm, np, dt)
+# This function checks for spikes, update one column of the V and of spike delays
+function step!(V, sd, t, cm, np, dt)
 
-	dv!(view(potentials, :, t), spike_delays[:, t], cm, np, dt) # This could actually slow down
+	dv!(view(V, :, t), sd[:, t], cm, np, dt) # This could actually slow down
 
-    potentials[view(potentials,:, t) .> np.Vₜ, t+1] .= 0.0
-    potentials[view(potentials,:, t) .== 0, t+1] .= np.Vᵣ
+    V[view(V,:, t) .> np.Vₜ, t+1] .= 0.0
+    V[view(V,:, t) .== 0, t+1] .= np.Vᵣ
     
-    spike_delays[view(potentials,:, t) .> np.Vₜ, t+3] .= dt*3
+    sd[view(V,:, t) .> np.Vₜ, t+3] .= dt*3 # TODO: make this indepentend from dt
 
 end
 
 
-# This function updates the potentials given the spike delays
+# This function updates the V given the spike delays
 function dv!(v, sd, cm, np, dt)
 
     I = (cm .* sd .* exp.(-sd ./ np.τₛ)) * v
@@ -141,35 +144,38 @@ function dv!(v, sd, cm, np, dt)
 end
 
 
+
 ### Block of 3 functions to simulate with DifferentialEquations ###
+
+
 function DEsimulate(time, cm, np, dt)
 	alg = FunctionMap{true}()
 
-    pot = zeros(np.N, time)
+    V = zeros(np.N, time)
 	spiked = zeros(np.N, time) .+ [dt:dt:dt*time;]'
 
-    pot[:, 1] .= np.Vᵣ
+    V[:, 1] .= np.Vᵣ
 
 	# give current
     for t in 1:time-3
-        DEstep!(pot, spiked, t, cm, np, dt, alg)
+        DEstep!(V, spiked, t, cm, np, dt, alg)
 	
     end
     
-    pot
+    V
 end
 
 
-function DEstep!(potentials, spike_delays, t, cm, np, dt, alg)
+function DEstep!(V, sd, t, cm, np, dt, alg)
    	 
-	p = (spike_delays[:, t], np)
-	prob = DiscreteProblem(f, potentials[:, t], (0, dt), p)
+	p = (sd[:, t], np)
+	prob = DiscreteProblem(f, V[:, t], (0, dt), p)
 	solve(prob, alg)
 
-    potentials[view(potentials,:, t) .> np.Vₜ, t+1] .= 0.0
-    potentials[view(potentials,:, t) .== 0, t+1] .= np.Vᵣ
+    V[view(V,:, t) .> np.Vₜ, t+1] .= 0.0
+    V[view(V,:, t) .== 0, t+1] .= np.Vᵣ
     
-    spike_delays[view(potentials,:, t) .> np.Vₜ, t+3] .= dt*3
+    sd[view(V,:, t) .> np.Vₜ, t+3] .= dt*3
 
 end
 
