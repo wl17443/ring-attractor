@@ -38,9 +38,9 @@ struct EnvironmentParameters
 end
 
 
-const ep = EnvironmentParameters(1e-3, 1e-3, 1e-9, 1e-3, 2e-3, ())
-const np = NeuronParameters(256, -48. *ep.mV, -80. *ep.mV, 1. *ep.nF, -70. *ep.mV, 0., -70. *ep.mV, -70. *ep.mV, 2.  *ep.ms, 5. *ep.ms, 5. *ep.ms, 1/(5*ep.ms*exp(-1.)))
-const sp = SynapseParameters(5, 7, 0.05, -0.10, 0.05, -0.25, 3)
+ep = EnvironmentParameters(1e-3, 1e-3, 1e-9, 1e-3, 2e-3, ())
+np = NeuronParameters(256, -48. *ep.mV, -80. *ep.mV, 1. *ep.nF, -70. *ep.mV, 0., -70. *ep.mV, -70. *ep.mV, 2.  *ep.ms, 5. *ep.ms, 5. *ep.ms, 1/(5*ep.ms*exp(-1.)))
+sp = SynapseParameters(5, 7, 0.05, -0.10, 0.05, -0.25, 3)
 
 const Eₗₜ= np.Eₗ / np.τₘ
 
@@ -66,10 +66,10 @@ function make_connectivity_matrix(sp::SynapseParameters, np::NeuronParameters)
             cm[i, :] = x
         end
     end
-    #  cm[cm .> 0] .*= (1 - np.Eₑ) # Not needed np.Eₑ == 1
 
-	cm .*= np.kₛ * 1e-6 / np.Cₘ
-    cm[cm .< 0] .*= np.Eᵢ
+	tmp = deepcopy(cm)
+	cm .*=
+    cm[tmp .< 0] .*=
     return cm
 end
 
@@ -80,10 +80,10 @@ end
 # This function initializes all the needed arrays
 function simulate(tottime, cm, np, ep)
     V = zeros(np.N, tottime)
-	sd = zeros(np.N, tottime) .+ [ep.dt:ep.dt:ep.dt*tottime;]' .+ 2.
+	sd = zeros(np.N, tottime) .+ [0:1:tottime-1;]' .* ep.dt .+ 0.2
 
     V[:, 1] .= np.Vᵣ
-	V[124:126,1] .= 0.
+	V[10:13,1] .= 0.
 
     for t in 1:tottime-3
         step!(V, sd, t, cm, np, ep, tottime)
@@ -101,17 +101,27 @@ function step!(V, sd, t, cm, np, ep, tottime)
     V[view(V,:, t) .> np.Vₜ, t+1] .= 0.0
     V[view(V,:, t) .== 0, t+1] .= np.Vᵣ
 
-	sd[view(V,:, t) .== 0.0, t+3:end] .= [3:1:tottime-t;]'.*ep.dt;
+	sd[view(V,:, t) .== 0.0, t+2:end] .= [2:1:tottime-t;]'.*ep.dt; # substitute 2 with refractory period variable
 end
 
 
 # This function updates the V given the spike delays
 function dv(v, sd, cm, np, ep)
 	# v .+ (Eₗₜ .- v ./ np.τₘ .- (v .*( cm * (sd .* exp.(-sd ./ np.τₛ))))) * ep.dt
-	v .+ (Eₗₜ .- v ./ np.τₘ .- (v .*( cm * (sd .* exp.(-sd ./ np.τₛ))))) * ep.dt
+
+	cm_inh = deepcopy(cm)
+	cm_exc = deepcopy(cm)
+
+	cm_inh[cm .> 0] .= 0
+	cm_inh *= -1
+	cm_exc[cm .< 0] .= 0
+
+	I_inh = (v.-np.Eᵢ) .*( cm_inh * (sd .* exp.(-sd ./ np.τₛ))) * np.kₛ * 1e-6 / np.Cₘ
+	I_exc = (v.-np.Eₑ) .*( cm_exc * (sd .* exp.(-sd ./ np.τₛ))) * np.kₛ * 1e-6 / np.Cₘ
+	Il = Eₗₜ .- v ./ np.τₘ
+	dv = (Il .- I_inh .- I_exc) * ep.dt
+	return v .+ dv
 end
 
-const cm = make_connectivity_matrix(sp, np)
-cm2 = make_connectivity_matrix(sp, np)
-pot, sd = simulate(12, cm, np, ep)
-pot, sd = simulate(10000, cm2, np, ep)
+cm = make_connectivity_matrix(sp, np)
+pot, sd = simulate(10000, cm, np, ep)

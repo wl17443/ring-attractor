@@ -5,7 +5,7 @@ import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
 from scipy.stats import vonmises, entropy
-from numba_lif_model import LIF
+from lif_model import LIF
 
 
 class RingAttractor:
@@ -46,9 +46,13 @@ class RingAttractor:
 
         potentials = [[] for _ in range(self.n)]
         for t in range(self.time):
+            print("\n\nTime = ", t)
             for neuron in self.neurons:
 
                 # self.input_source(n_of_spikes=5, begin=0, neuron=neuron, time=t)
+                if t == 0:
+                    if neuron.id == 10:
+                        neuron.V = -0.0001
                 neuron.step()
                 potentials[neuron.id].append(neuron.V)
 
@@ -119,7 +123,6 @@ class RingAttractor:
 
     def input_source(self, n_of_spikes, begin, neuron, time):
         sources = [i for i in range(self.mid_point - 2, self.mid_point + 3)]
-
         if time > begin:
             if neuron.id in sources:
                 for _ in range(n_of_spikes):
@@ -150,7 +153,7 @@ class RingAttractor:
                 for i in range(1, 5):
                     neur.synapses["exc"][self.neurons[(
                         neur.id + i) % self.n]] = self.weights[2]
-                    neur.synapses["exc"][self.neurons[neur.id - i]
+                    geur.synapses["exc"][self.neurons[neur.id - i]
                                          ] = self.weights[2]
 
             else:
@@ -211,10 +214,7 @@ if __name__ == "__main__":
     # ring = RingAttractor(n=256, noise=2.0e-3, weights=(0.050, 0.100, 0.050, 0.250), fixed_points_number=0, time=500, plot=True, random_seed=42)
     # error = ring.simulate()
 
-    import time
-    ring = RingAttractor(n=256, noise=0e-3, weights=(0.050, 0.100, 0.050, 0.250), fixed_points_number=0, time=10000, plot=False, random_seed=42)
-    start = time.time()
+    ring = RingAttractor(n=20, noise=0e-3, weights=(0.050, 0.100, 0.050, 0.250), fixed_points_number=0, time=1000, plot=True, random_seed=42)
     error = ring.simulate()
-    end = time.time()
+    print(ring.raw_data)
 
-    print(f"Time elapsed with python: {end-start} seconds") 

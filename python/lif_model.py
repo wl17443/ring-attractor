@@ -73,6 +73,8 @@ class LIF:
         self.exc_ps_td.clear()
 
     def dV(self):
+        # print("\nNeuron ", self.id)
+        # print((self.Is_inh() + self.Is_exc())/1e-9)
         return (-self.Il() - self.Is_inh() - self.Is_exc()) / self.Cm
 
     def Il(self):
@@ -81,6 +83,7 @@ class LIF:
     def Is_inh(self):
         I = 0.0
         for td, w in self.inh_ps_td:
+            # print(w * 1e-6 / 1e-9 * self.Gexc(td))
             I += (self.Ginh(td) * (self.V - self.Einh)) * w * 1e-6
 
         return I
@@ -88,6 +91,11 @@ class LIF:
     def Is_exc(self):
         I = 0.0
         for td, w in self.exc_ps_td:
+            # print('\nNeuron ', self.id)
+            # print('w', w)
+            # print('k*dt*exp(dt)', self.Gexc(td))
+            # print(w * 1e-6 / 1e-9 * self.Gexc(td) * (self.V - self.Einh))
+            # print(td, w)
             I += (self.Gexc(td) * (self.V - self.Eexc)) * w * 1e-6
 
         return I
