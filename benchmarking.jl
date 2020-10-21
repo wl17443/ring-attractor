@@ -1,5 +1,4 @@
 using Distributions
-
 struct NeuronParameters
     N::Int64
     Vₜ::Float64
@@ -35,7 +34,7 @@ struct EnvironmentParameters
 end
 
 ep = EnvironmentParameters(1e-3, 1e-3, 1e-9, 1e-3, 2e-3, ())
-np = NeuronParameters(256, -48. *ep.mV, -80. *ep.mV, 1. *ep.nF, -70. *ep.mV, 0., -70. *ep.mV, -70. *ep.mV, 2.  *ep.ms, 5. *ep.ms, 5. *ep.ms, 1/(5*ep.ms*exp(-1.)))
+np = NeuronParameters(20, -48. *ep.mV, -80. *ep.mV, 1. *ep.nF, -70. *ep.mV, 0., -70. *ep.mV, -70. *ep.mV, 2.  *ep.ms, 5. *ep.ms, 5. *ep.ms, 1/(5*ep.ms*exp(-1.)))
 sp = SynapseParameters(5, 7, 0.05, -0.10, 0.05, -0.25, 3)
 
 const Eₗₜ= np.Eₗ / np.τₘ
@@ -82,7 +81,7 @@ function simulate(tottime, np, sp, ep)
 	sd = zeros(np.N) .+ 0.2
 
     V[:, 1:4] .= np.Vᵣ
-	V[126:132,1:4] .= 0.
+	V[1:3,1:4] .= 0.
 
     for t in 3:tottime-1
         step!(V, sd, t, w, np, ep, tottime)
@@ -93,8 +92,6 @@ end
 
 # This function checks for spikes, update one column of the V and of spike delays
 function step!(V, sd, t, w, np, ep, tottime)
-
-
 
 	V[:, t+1] = dv(view(V, :, t), sd, w, np, ep)
 	V[view(V,:, t) .> np.Vₜ, t+1] .= 0.0
@@ -114,4 +111,4 @@ function dv(v, sd, w, np, ep)
 end
 
 
-pot, sd = simulate(10000, np, sp, ep)
+pot, sd = simulate(200, np, sp, ep)

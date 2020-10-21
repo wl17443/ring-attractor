@@ -78,58 +78,35 @@ end
 
 
 # This function initializes all the needed arrays
-function simulate(tottime, np, sp, ep)
+function DEsimulate(tottime, np, sp, ep)
 	alg = FunctionMap{true}()
-
-	w_ = genweights(np, sp)
-    V = zeros(np.N, tottime)
-	# sd = zeros(np.N, tottime) .+ [0:1:tottime-1;]' .* ep.dt .+ 0.2
+	w = genweights(np, sp)
+    v = zeros(np.N) .+ np.Vᵣ
 	sd = zeros(np.N) .+ 0.2
 
+	v[1:5] .= 0.
 
-    V[:, 1] .= np.Vᵣ
-	V[10:13,1] .= 0.
+	p = (w, np, ep)
+	prob = DiscreteProblem(update!, [v, sd], (ep.dt, tottime*ep.dt), p)
+	sim = solve(prob, alg, dt=ep.dt)
+	return sim
 
-    for t in 1:tottime-3
-        step!(V, sd, t, w, np, ep, tottime, alg)
-    end
-
-    V[:, 1:tottime-3], sd
-end
-
-# This function checks for spikes, update one column of the V and of spike delays
-function step!(V, sd, t, w, np, ep, tottime, alg)
-
-    V[view(V,:, t) .== 0.0, t+1] .= np.Vᵣ
-    V[view(V,:, t) .> np.Vₜ, t+1] .= 0.0
-
-	p = (sd, w, np, ep)
-	prob = DiscreteProblem(dv2, view(V, :, t), (0, ep.dt), p)
-	sim = solve(prob, alg, dt=ep.dt, saveat=ep.dt)
-	V[:, t+1] = sim.u[2]
-
-
-	if t >= 3
-		sd[view(V,:, t-2) .== 0.0] .= 0.
-	end
-	sd .+= ep.dt
-	# sd[view(V,:, t) .== 0.0, t+2:end] .= [2:1:tottime-t;]'.*ep.dt; # substitute 2 with refractory period variable
 end
 
 
-function dv2(v, p, t)
-	V[view(V,:, t) .== 0.0, t+1] .= np.Vᵣ
-	V[view(V,:, t) .> np.Vₜ, t+1] .= 0.0
 
-	k = p[1] .* exp.(-p[1] ./ p[3].τₛ)
-	v .+= ((Eₗₜ .- v ./ p[3].τₘ ).- (v.-p[3].Eₑ) .*( p[2][2] * k) .- (v.-p[3].Eᵢ) .*( p[2][1] * k))
+function update!(dv, u, p, t)
+	w, np, ep = p
 
-	if t >= 3
-		p[1][view(V,:, t-2) .== 0.0] .= 0.
-	end
-	p[1] .+= p[4].dt
+	v, sd = u
+	v[v .== 0.0] .= np.Vᵣ
+	v[v .> np.Vₜ] .= 0.0
+
+	k = sd .* exp.(-sd ./ np.τₛ)
+	dv[1] += ((Eₗₜ .- v ./ np.τₘ ).- (v.-np.Eₑ) .*( w[2] * k) .- (v.-np.Eᵢ) .*( w[1] * k))
+	dv[2][v .== 0.0] .= 2*ep.dt
+	dv[2] .+= 1
 end
 
 
-w = genweights(np, sp)
-pot, sd = simulate(100, np, sp, ep)
+sim = DEsimulate(200, np, sp, ep)
