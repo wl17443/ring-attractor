@@ -51,7 +51,7 @@ class RingAttractor:
 
                 # self.input_source(n_of_spikes=5, begin=0, neuron=neuron, time=t)
                 if t == 0:
-                    if neuron.id == 10:
+                    if neuron.id in range(31, 36):
                         neuron.V = -0.0001
                 neuron.step()
                 potentials[neuron.id].append(neuron.V)
@@ -214,7 +214,6 @@ if __name__ == "__main__":
     # ring = RingAttractor(n=256, noise=2.0e-3, weights=(0.050, 0.100, 0.050, 0.250), fixed_points_number=0, time=500, plot=True, random_seed=42)
     # error = ring.simulate()
 
-    ring = RingAttractor(n=20, noise=0e-3, weights=(0.050, 0.100, 0.050, 0.250), fixed_points_number=0, time=1000, plot=True, random_seed=42)
+    ring = RingAttractor(n=64, noise=0e-3, weights=(0.050, 0.100, 0.050, 0.250), fixed_points_number=0, time=100, plot=True, random_seed=None)
     error = ring.simulate()
-    print(ring.raw_data)
 

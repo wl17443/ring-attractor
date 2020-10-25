@@ -34,8 +34,9 @@ wmax = 0.30
 y1 = (wmax - wmin) / tmax * rate
 
 b = (log(y1) + sqrt((-log(y1))^2 + 4x0*x1))/2x1
-a = exp(b1 * x1)
+a = exp(b * x1)
 
+t = [1:1:15;]
 f(x) = a*exp(-x/b)
 plot(f.(t[9:end]), line = (5), lab="decay")
 hline!([y1], line = (5, :dash), lab="y1")
@@ -44,28 +45,19 @@ hline!([y1], line = (5, :dash), lab="y1")
 function decay()
     w0 = 0.05
     inc = 0.01
-    tau = 0.02
+    tau = x0/(log(w0+inc) - log(y1)) * 45
 
     w = zeros(2000)
-    w[1] = w0
+    w[1] = w0 + inc
     for t in 1:1999
-        if t % 11 == 0
+        if t % 9 == 0
             w[t] += inc
         end
 
-        w[t+1] =  w[t] - a/b * exp(-t/b)
+        w[t+1] =  w[t]  - w[t]/tau
     end
 
-
-    z = zeros(2000)
-    z[1] = w0
-    for t in 1:1999
-        if t % 9 == 0
-            z[t] += inc
-        end
-
-        z[t+1] =  z[t] - a/b * exp(-t/b)
-    end
     plot(w)
-    plot!(z)
 end
+
+decay()
