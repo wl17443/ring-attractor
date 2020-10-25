@@ -30,27 +30,9 @@ function kl_divergence(n1, n2)
 end
 
 
-#
-# function slice(spikes, t1, t2)
-#     s = spikes[:, t1:t2]
-#     view(s, s .> 0)
-# end
-#
-#
-# function total_divergence(spikes)
-#     spikes = Array{Int, 2}(V .== 0)
-#     spikes .*= [1:1:np.N;]
-#
-#     slice_1 = spikes[:, 1:3000]
-#     slice_1 = reshape(slice_1, :)
-#     slice_1 = slice_1[slice_1 .> 0]
-#
-#     slice_2 = spikes[:, 7000:end]
-#     slice_2 = reshape(slice_2, :)
-#     slice_2 = slice_2[slice_2 .> 0]
-#
-#     N₁ = fit(Normal, slice_1)
-#     N₂ = fit(Normal, slice_2)
-#
-#     normal_divergence(N₁, N₂)
-# end
+
+function slice(spikes, range)
+	spikes = Array{Int, 2}(spikes)
+	spikes[:, range] .*= [1:1:size(spikes, 1);]
+    @view spikes[spikes .> 0]
+end

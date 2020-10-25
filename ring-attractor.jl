@@ -117,9 +117,8 @@ function setweights!(r::Ring)
 	replace!(x -> r.wᵢ,  view(r.Wᵢ, r.Wᵢ .> 0.))
 
     for fp in r.fps
-		r = (fp:fp + 2) .- 1
-		replace!(view(r.Wₑ, r, :), r.wₑ => r.wₑᶠ)
-		replace!(view(r.Wᵢ, r, :), r.wᵢ => r.wᵢᶠ)
+		replace!(view(r.Wₑ, (fp:fp+2).-1, :), r.wₑ => r.wₑᶠ)
+		replace!(view(r.Wᵢ, (fp:fp+2).-1, :), r.wᵢ => r.wᵢᶠ)
     end
 
 	r.Wₑ .*= kₛ * 1e-6 / Cₘ
