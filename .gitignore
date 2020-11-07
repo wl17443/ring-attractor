@@ -1,5 +1,6 @@
 __pycache__/
 plots/
 data/
+notebooks/
 .vscode/
 .ipynb_checkpoints/
