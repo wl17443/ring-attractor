@@ -21,11 +21,14 @@
 - [x] Write a summary of what you did to calculate the noise where every fp_n situation is stable
 
 
-### Meet 4 
+### Meeting 4 
 
-- [] Analytic kl 
-- [] Compute divergence in sliding window 
-- [] We can compute lenght of vector of different in std, difference in mean, error between the two time points (not gaussian)
+- [x] Analytic kl 
+- [x] Compute divergence in sliding window 
+- [x] We can compute lenght of vector of different in std, difference in mean, error between the two time points (not gaussian)
 - [] If bump drift too much terminate
 
+### Meeting 5
 
+
+- [ ] Presentation and plots

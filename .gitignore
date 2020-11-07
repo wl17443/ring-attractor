@@ -1,5 +1,5 @@
 __pycache__/
-images
-backups
-profiling
+plots/
+data/
+.vscode/
 .ipynb_checkpoints/

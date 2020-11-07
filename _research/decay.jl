@@ -1,5 +1,5 @@
 using Plots
-include("ring_attractor.jl");
+include(srcdir("ring-attractor.jl"));
 
 function mean_activity(N, par)
     sim =SimulationParameters(64, 10000, 5e-4, (), 0, 0.05, -0.10, 0.05, -0.25)

@@ -153,7 +153,7 @@ class RingAttractor:
                 for i in range(1, 5):
                     neur.synapses["exc"][self.neurons[(
                         neur.id + i) % self.n]] = self.weights[2]
-                    geur.synapses["exc"][self.neurons[neur.id - i]
+                    neur.synapses["exc"][self.neurons[neur.id - i]
                                          ] = self.weights[2]
 
             else:

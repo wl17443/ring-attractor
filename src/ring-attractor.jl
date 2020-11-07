@@ -1,4 +1,5 @@
-module RingAttractor
+using DrWatson
+@quickactivate "Ring Attractor"
 
 using Distributions
 using Random
@@ -32,7 +33,8 @@ mutable struct Ring <: Function
 	t::Int32
 
 	noise::Float64
-	fps::Tuple # TODO take fpn and autogenerate fps
+	fpn::Int
+	fps::Array{Int64, 1}
 	seed::Int32
 
 	wₑ::Float64
@@ -51,13 +53,14 @@ mutable struct Ring <: Function
 	k::Array{Float64, 1}
 
 
-	function Ring(;N=64, time=10000, noise=5e-4, fps=(), seed=0, wₑ=0.05, wᵢ=0.10, wₑᶠ=0.05, wᵢᶠ=0.25)
+	function Ring(;N=64, time=10000, noise=5e-4, fps=(), fpn=0, seed=0, wₑ=0.05, wᵢ=0.10, wₑᶠ=0.05, wᵢᶠ=0.25)
 		self = new()
 
 		self.N = N
 		self.time = time
 		self.noise = noise
-		self.fps = fps
+		self.fpn = fpn
+		self.fps = length(fps) == 0 ? get_fixed_points(N, fpn) : fps
 		self.seed = seed
 		if seed != 0
 			Random.seed!(seed)
@@ -129,10 +132,18 @@ function init!(r::Ring)
 	r.Δs = fill(0.2, r.N, 3)
 	r.Z = rand(Normal(0., r.noise), r.N, r.time)
 	replace!(view(r.V, :, 1), 0. => Vᵣ)
-	replace!(view(r.V, (r.N÷2:r.N÷2+5).-2, 1), Vᵣ => 0.)
+	if r.N > 5
+		replace!(view(r.V, (r.N÷2:r.N÷2+5).-2, 1), Vᵣ => 0.)
+	else 
+		replace!(view(r.V, :, 1), Vᵣ => 0.)
+	end
 	setweights!(r)
 end
 
-export Ring
+function get_fixed_points(N, fpn)::Array{Int64, 1}
+	if fpn == 0
+		return []
+	end
 
+	findall([1:1:N;] .% (N ÷ fpn) .== 0) .- N ÷ fpn ÷ 2
 end
