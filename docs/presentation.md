@@ -1,7 +1,5 @@
-- [x] neuron model
-- [x] connectivity
-- [x] bump without noise
-- [x] bump raising noise (gif with noise raising while it's going??)
-- [ ] Stability without fixed points
-- [ ] Stability with fixed points
-- [ ] Stability range
+[text](images/bumps.png)
+[text](images/scatter3d.png)
+[text](images/error_by_noise.png)
+![text](images/unstable_compressed.gif)
+
