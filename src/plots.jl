@@ -5,9 +5,9 @@ using Plots; plotlyjs()
 
 function plot_stability_range(m)
 
-	exc = m.exc
-	inh = m.inh
-	means = reshape(m.means ./ 5, (length(unique(exc)), length(unique(inh))))
+	exc = unique(m.exc)
+	inh = unique(m.inh)
+	means = convert(Matrix, unstack(m, :exc, :inh, :means)[2:end]) ./ 5
  
 	surface(exc, inh, means,
 		colorbar_title="Error",
