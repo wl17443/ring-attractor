@@ -117,3 +117,29 @@ function simulate(p, v)
 end
 
 sol = simulate(p, v)
+
+
+# function fit_errors(fps, iters=500)
+#     ring = Ring(fps=fps)
+#     means = zeros(iters)
+#     vars = zeros(iters)
+
+#     @inbounds for i in 1:iters
+#         m, v = sim_and_measure(ring)
+#         @inbounds means[i] =  m
+#         @inbounds vars[i] = v
+#     end
+#     fit(Gamma, means[.!isnan.(means)]), fit(Gamma, vars[.!isnan.(vars)]) # TODO select distribution
+# end
+
+
+# function isstable(m, v, pars)
+#     sm, sv, um, uv = pars
+#     loglikelihood(sm, m) + loglikelihood(sv, v) > loglikelihood(um, m) + loglikelihood(uv, v)
+# end
+
+# function stability(m, v, pars)
+#     sm, sv, um, uv = pars
+#     loglikelihood(um, m) / loglikelihood(sm, m) + loglikelihood(uv, v) / loglikelihood(sv, v) 
+# end
+

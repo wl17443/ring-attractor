@@ -30,5 +30,11 @@
 
 ### Meeting 5
 
-
 - [ ] Presentation and plots
+characterize noise
+add data for 12 and 24 fp
+bar plot the error x noise
+the stability parameters, with surface plot
+
+change screen
+wed after 3pm (meeting at 6.30)

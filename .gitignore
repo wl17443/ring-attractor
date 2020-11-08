@@ -1,6 +1,6 @@
 __pycache__/
 plots/
-data/
+data/biasvariance
 notebooks/
 .vscode/
 .ipynb_checkpoints/
