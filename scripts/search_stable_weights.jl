@@ -4,10 +4,10 @@ using DrWatson
 include(srcdir("stability.jl"))
 
 e0 = 0.01
-e1 = 0.30
+e1 = 0.20
 i0 = 0.05
-i1 = 0.30
-step = 0.001
+i1 = 0.20
+step = 0.005
 noise = 0.
 iters = 7
 
