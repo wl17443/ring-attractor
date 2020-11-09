@@ -12,6 +12,7 @@ function find_stable_w(e_range, i_range, noise=0., iters=7)
 	l = ReentrantLock() # create lock variable
 
 	for i in i_range
+		@show i	
 		Threads.@threads for e in e_range
 			@show i
 
