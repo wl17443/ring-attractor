@@ -1,6 +1,6 @@
 __pycache__/
-plots/
+plots/academy/
+plots/pre-julia/
+plots/julia/gif/
 data/biasvariance
 notebooks/
-.vscode/
-.ipynb_checkpoints/
