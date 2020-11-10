@@ -1,7 +1,7 @@
 ### Meeting 1
 
 - [x] von mises fit on first x seconds and last x seconds
-- [x] take the k-l divergence (super fucking careful) between the 2 and this will be new error metric
+- [x] take the k-l divergence (super careful) between the 2 and this will be new error metric
 - [x] for every fp-N plot error x noise with mean plotted enveloped in std
 
 
@@ -17,7 +17,7 @@
 
 ### Meeting 3
 
-- [] Try to understand if being in a fixed point reduces the energy level of the network
+- [ ] Try to understand if being in a fixed point reduces the energy level of the network
 - [x] Write a summary of what you did to calculate the noise where every fp_n situation is stable
 
 
@@ -26,15 +26,18 @@
 - [x] Analytic kl 
 - [x] Compute divergence in sliding window 
 - [x] We can compute lenght of vector of different in std, difference in mean, error between the two time points (not gaussian)
-- [] If bump drift too much terminate
+- [ ] If bump drift too much terminate
 
 ### Meeting 5
 
 - [ ] Presentation and plots
-characterize noise
-add data for 12 and 24 fp
-bar plot the error x noise
-the stability parameters, with surface plot
+- [ ] characterize noise
+- [ ] add data for 12 and 24 fp
+- [ ] bar plot the error x noise
+- [ ] the stability parameters, with surface plot
 
-change screen
-wed after 3pm (meeting at 6.30)
+- [x] change screen
+
+### Meeting X
+
+**wed after 3pm (meeting at 6.30)**
