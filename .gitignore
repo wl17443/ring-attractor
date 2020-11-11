@@ -1,5 +1,6 @@
-__pycache__/
-images
-backups
-profiling
-.ipynb_checkpoints/
+plots/neuromatch/
+plots/seaborn/
+plots/julia/
+data/stability/
+data/biasvariance
+notebooks/
