@@ -33,5 +33,6 @@ Please reference the Github Wiki of this repository for more information on the 
 *Critical Limits in a Bump Attractor Network of Spiking Neurons*, Alberto Arturo Vergani and Christian Robert Huyck
 
 *Wandering Bumps in Stochastic Neural Fields*, Zachary P. Kilpatrick and Bard Ermentrout
+
 *Local/Global Analysis of the Stationary Solutions of some Neural Field Equations*, Romain Veltz and Olivier Faugeras
 
