@@ -1,6 +1,6 @@
 __pycache__/
-plots/academy/
-plots/pre-julia/
+plots/neuromatch/
+plots/seaborn/
 plots/julia/gif/
 data/biasvariance
 notebooks/

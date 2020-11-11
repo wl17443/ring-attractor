@@ -7,7 +7,7 @@ include(srcdir("ring-attractor.jl"))
 include(srcdir("stats.jl"))
 
 
-function find_stable_w(e_range, i_range, noise=0.)
+function find_stable_w(e_range, i_range, noise=0., seed=0)
 	stability_matrix = DataFrame(exc=Float64[], inh=Float64[], sum=Int64[])
 	l = ReentrantLock() # create lock variable
 
@@ -15,7 +15,7 @@ function find_stable_w(e_range, i_range, noise=0.)
 		@show i	
 		Threads.@threads for e in e_range
 
-			ring = Ring(wₑ=e, wᵢ=i, noise=noise)
+			ring = Ring(wₑ=e, wᵢ=i, noise=noise, seed=seed)
 			ring()
 			s = sum(ring.S)
 
@@ -28,7 +28,7 @@ function find_stable_w(e_range, i_range, noise=0.)
 end
 
 
-function find_stable_fp_w(e_range, i_range, fps=[32], iters=7)
+function find_stable_fp_w(e_range, i_range, fps=[32], seed=seed)
 	stability_matrix = DataFrame(exc=Float64[], inh=Float64[], sum=Int64[])
 	l = ReentrantLock() # create lock variable
 

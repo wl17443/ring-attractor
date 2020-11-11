@@ -5,6 +5,7 @@ using Plots; plotlyjs()
 using StatsPlots
 using Plots.PlotMeasures
 using DataFrames 
+using Printf
 
 function plot_stability_range(m)
 
@@ -55,9 +56,14 @@ function scatter_w_range(m)
 	yaxis!("Inhibitory weights")
 end
 
-function inspect_weights(;wₑ=0.05, wᵢ=0.1, wₑᶠ=0.05, wᵢᶠ=0.1, noise=0, fpn=0)
+function inspect_weights(;wₑ=0.05, wᵢ=0.1, wₑᶠ=0.05, wᵢᶠ=0.1, noise=0, fpn=0, long=false)
 	ring = Ring(wₑ=wₑ, wᵢ=wᵢ, wₑᶠ=wₑᶠ, wᵢᶠ=wᵢᶠ, noise=noise, fpn=fpn)
+	@show ring.wₑ, ring.wᵢ, ring.noise, ring.fpn, ring.fps
 	ring()
 	tit = @sprintf "wₑ=%.2f  wᵢ=%.2f  wₑᶠ=%.2f  wᵢᶠ=%.2f  noise=%.1e  fpn=%d" ring.wₑ ring.wᵢ ring.wₑᶠ ring.wᵢᶠ ring.noise ring.fpn
-	heatmap(ring.V, yaxis=("Neurons"), xaxis=("Time (ms)"), colorbar_title=("Voltage (V)"), size=(800,800), title=tit, top_margin=10px)
+	l = 1000
+	if long
+		l *= 10
+	end
+	heatmap(ring.V, yaxis=("Neurons"), xaxis=("Time (ms)"), colorbar_title=("Voltage (V)"), size=(l, 640), title=tit, top_margin=10px)
 end

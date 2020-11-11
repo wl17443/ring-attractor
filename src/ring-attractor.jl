@@ -27,6 +27,15 @@ const Nᵢ = 7
 const fp_w = 2
 
 
+mutable struct CircularIndex
+       val::Int
+       per::Int
+end
+
+function ++(x::CircularIndex)
+       x.val = x.val % x.per + 1
+end
+
 mutable struct Ring <: Function
 	N::Int32
 	time::Int32
@@ -50,10 +59,11 @@ mutable struct Ring <: Function
 	Z::Array{Float64, 2}
 
 	Δs::Array{Float64, 2}
+	idx::CircularIndex
 	k::Array{Float64, 1}
 
 
-	function Ring(;N=64, time=10000, noise=5e-4, fps=(), fpn=0, seed=0, wₑ=0.05, wᵢ=0.10, wₑᶠ=0.05, wᵢᶠ=0.25)
+	function Ring(;N=64, time=10000, noise=5e-4, fps=(), fpn=0, seed=0, wₑ=0.05, wᵢ=0.10, wₑᶠ=0.05, wᵢᶠ=0.25, τᵣ=3)
 		self = new()
 
 		self.N = N
@@ -76,7 +86,8 @@ mutable struct Ring <: Function
 		self.V = zeros(N, time)
 		self.Z = zeros(N, time)
 		self.S = falses(N, time)
-		self.Δs = zeros(N, 3)
+		self.Δs = zeros(N, τᵣ)
+		self.idx = CircularIndex(0, τᵣ)
 		self.k = zeros(N)
 		self.t = 0
 
@@ -91,10 +102,10 @@ function (r::Ring)()
 	init!(r)
 
 	for r.t = 1:r.time-1
-		idx = r.t % 3 + 1
+		++(r.idx)
 		r.S[:, r.t] .= view(r.V, :, r.t) .== 0.
 
-		r.k .= @views r.Δs[:, idx] .* exp.(-r.Δs[:, idx] ./ τₛ)
+		r.k .= @views r.Δs[:, r.idx.val] .* exp.(-r.Δs[:, r.idx.val] ./ τₛ)
 
 		r.V[:, r.t+1] .= @views r.V[:, r.t] .+ ((Eₗₜ .- r.V[:, r.t] ./ τₘ ) .- (r.V[:, r.t].-Eₑ) .* (r.Wₑ' * r.k) .- (r.V[:, r.t].-Eᵢ) .* (r.Wᵢ' * r.k)) .* dt
 		r.V[:, r.t+1] .+= @view r.Z[:, r.t+1]
@@ -103,7 +114,7 @@ function (r::Ring)()
 		r.V[view(r.S, :, r.t), r.t+1] .= Vᵣ
 
 		r.Δs .+= dt
-		r.Δs[view(r.S, :, r.t), idx] .= 0.
+		r.Δs[view(r.S, :, r.t), r.idx.val] .= 0.
 	end
 end
 
@@ -129,7 +140,8 @@ function setweights!(r::Ring)
 end
 
 function init!(r::Ring)
-	r.Δs = fill(0.2, r.N, 3)
+	fill!(r.Δs, 0.2)
+	r.idx.val = 0
 	r.Z = rand(Normal(0., r.noise), r.N, r.time)
 	replace!(view(r.V, :, 1), 0. => Vᵣ)
 	if r.N > 5
@@ -147,3 +159,5 @@ function get_fixed_points(N, fpn)::Array{Int64, 1}
 
 	findall([1:1:N;] .% (N ÷ fpn) .== 0) .- N ÷ fpn ÷ 2
 end
+
+
