@@ -7,6 +7,8 @@ using Plots.PlotMeasures
 using DataFrames 
 using Printf
 
+include(srcdir("ring-attractor.jl"))
+
 function plot_stability_range(m)
 
 	exc = unique(m.exc)
