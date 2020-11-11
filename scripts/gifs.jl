@@ -20,53 +20,6 @@ function partial_filter(S, N, bin=100, step=1)
     end
     normes
 end
-##
-r1 = Ring(N=1, time=60, noise=0)
-r1()
-r4 = Ring(N=4, time=60, noise=0)
-r4()
-r6 = Ring(N=6, time=60, noise=0)
-r6()
-
-plotlyjs()
-plot([r1.V[1, :], r4.V[1, :], r6.V[1, :]], lw=1.5, 
-     label=["Single Neuron" "Coupled Neurons" "Six Neurons"],
-     size=(700,450))
-xaxis!("Time (ms)")
-yaxis!("Voltage (V)")
-##
-
-
-##
-gr()
-ring = Ring(N=48)
-plot(showaxis=false, size=(600, 550), colorbar=:none, 
-     heatmap(ring.Wₑ, colorbar=:none, c=[:grey4, :red4], 
-             yaxis=("Receiving Neurons", (1:64), []), 
-             xaxis=("Emitting Neurons", (1:64), []),
-             title="Excitatory connections"),
-     heatmap(ring.Wₑ, proj=:polar, c=[:grey4, :red4]),
-     heatmap(ring.Wᵢ, colorbar=:none, c=[:grey4, :blue3], 
-             yaxis=("Receiving Neurons", (1:64), []), 
-             xaxis=("Emitting Neurons", (1:64), []),
-             title="Inhibitory connections"),
-     heatmap(ring.Wᵢ, proj=:polar, c=[:grey4, :blue3]))
-##
-
-##
-ring = Ring(N=32, noise=0, time=200)
-ring()
-heatmap(ring.V, colorbar_title="Voltage (V)", size=(700, 450))
-xaxis!("Time (ms)")
-yaxis!("Neuron #")
-
-ring = Ring(N=64, noise=8e-4, time=10000, seed=44)
-ring()
-heatmap(ring.V, colorbar_title="Voltage (V)", size=(700, 450))
-xaxis!("Time (ms)")
-yaxis!("Neuron #")
-##
-#
 ring = Ring(noise=0)
 ring()
 anim = @animate for i in 1:200

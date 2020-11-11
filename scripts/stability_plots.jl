@@ -56,10 +56,6 @@ inspect_weights(wₑᶠ=0.05, wᵢᶠ=0.2, noise=0.5e-3, fpn=1)
 inspect_weights(wₑᶠ=0.2, wᵢᶠ=0.0, noise=0.5e-3, fpn=1)
 
 # Critical zone
-inspect_weights(wₑ=0.05, wᵢ=0.05, noise=0.5e-3)
-inspect_weights(wₑᶠ=0.073, wᵢᶠ=0.023, noise=0.5e-3, fpn=1)
-inspect_weights(wₑᶠ=0.07, wᵢᶠ=0.03, noise=0.5e-3, fpn=1)
-inspect_weights(wₑᶠ=0.062, wᵢᶠ=0.059, noise=0.5e-3, fpn=1)
-inspect_weights(wₑᶠ=0.078, wᵢᶠ=0.003, noise=0.5e-3, fpn=1)
+inspect_weights(wₑᶠ=0.055, wᵢᶠ=0.005, noise=0.5e-3, fpn=1, seed=2020)
 
 

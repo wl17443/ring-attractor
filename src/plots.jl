@@ -13,9 +13,8 @@ function plot_stability_range(m)
 
 	exc = unique(m.exc)
 	inh = unique(m.inh)
-	means = convert(Matrix, unstack(dropmissing(m), :inh, :exc, :means)[2:end])
+	means = convert(Matrix, unstack(dropmissing(m), :inh, :exc, :sum)[2:end])
  
-	means ./= 5.
 	surface(inh, exc, means,
 		colorbar_title="Error",
 		size=(800, 800),
@@ -58,11 +57,10 @@ function scatter_w_range(m)
 	yaxis!("Inhibitory weights")
 end
 
-function inspect_weights(;wₑ=0.05, wᵢ=0.1, wₑᶠ=0.05, wᵢᶠ=0.1, noise=0, fpn=0, long=false)
-	ring = Ring(wₑ=wₑ, wᵢ=wᵢ, wₑᶠ=wₑᶠ, wᵢᶠ=wᵢᶠ, noise=noise, fpn=fpn)
-	@show ring.wₑ, ring.wᵢ, ring.noise, ring.fpn, ring.fps
+function inspect_weights(;wₑ=0.05, wᵢ=0.1, wₑᶠ=0.05, wᵢᶠ=0.1, noise=0, fpn=0, long=false, seed=0)
+	ring = Ring(wₑ=wₑ, wᵢ=wᵢ, wₑᶠ=wₑᶠ, wᵢᶠ=wᵢᶠ, noise=noise, fpn=fpn, seed=seed)
 	ring()
-	tit = @sprintf "wₑ=%.2f  wᵢ=%.2f  wₑᶠ=%.2f  wᵢᶠ=%.2f  noise=%.1e  fpn=%d" ring.wₑ ring.wᵢ ring.wₑᶠ ring.wᵢᶠ ring.noise ring.fpn
+	tit = @sprintf "wₑ=%.3f  wᵢ=%.3f  wₑᶠ=%.3f  wᵢᶠ=%.3f  noise=%.1e  fpn=%d" ring.wₑ ring.wᵢ ring.wₑᶠ ring.wᵢᶠ ring.noise ring.fpn
 	l = 1000
 	if long
 		l *= 10
