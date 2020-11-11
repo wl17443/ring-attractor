@@ -22,10 +22,13 @@ Please reference the Github Wiki of this repository for more information on the 
 - [x] Implemented an equation to uodate weights as a function of number of fixed ponts
 - [x] Implemented an error metric based on the mean of the median neuron that fired in every timestep for the last 100 timesteps
 - [x] Performed many simulations with different fixed points to find the one with least error
+- [x] Repeated simulations with different levels of noise
+- [x] Moved codebase to Julia to gain simulation speed and code maintainability
+- [x] Performed many simulations with different weights to find parameters for bump stability
+- [x] Performed many simulations with different weights to find parameters for fixed point stability
 
 ## Yet to do
 
-- [ ] Repeat simulations with different levels of noise
 - [ ] Implement learning rules
 
 ## Resources
