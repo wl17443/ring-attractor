@@ -25,7 +25,7 @@
 
 - [x] Analytic kl 
 - [x] Compute divergence in sliding window 
-- [x] We can compute lenght of vector of different in std, difference in mean, error between the two time points (not gaussian)
+- [x] We can compute length of vector of different in std, difference in mean, error between the two time points (not gaussian)
 - [ ] If bump drift too much terminate
 
 ### Meeting 5
@@ -37,5 +37,7 @@
 ### Meeting 6
 
 
+- [ ] summarized mehrdad meeting
+- [ ] redo fp weight stability plot counting spikes only in the surrounding of the fixed point
 
 **wed after 3pm (meeting at 6.30)**
