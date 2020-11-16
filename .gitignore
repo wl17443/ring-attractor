@@ -1,6 +1,7 @@
 plots/neuromatch/
 plots/seaborn/
 plots/julia/
+luxor/
 data/stability/
 data/biasvariance
 notebooks/notebooks

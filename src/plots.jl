@@ -52,7 +52,7 @@ end
 
 function scatter_w_range(m, title="")
 	@df m scatter(:exc, :inh, :sum, markersize=0.1, size=(800,800),
-				  zaxis=("# of spikes"), title=title)
+				  zaxis=("# of spikes"), title=title, label=false)
 	xaxis!("Excitatory weights")
 	yaxis!("Inhibitory weights")
 end

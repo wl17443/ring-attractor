@@ -28,7 +28,7 @@ function find_stable_w(e_range, i_range, noise=0., seed=0)
 end
 
 
-function find_stable_fp_w(e_range, i_range, fps=[32], seed=seed)
+function find_stable_fp_w(e_range, i_range, fps=[32], seed=seed, restrained=true)
 	stability_matrix = DataFrame(exc=Float64[], inh=Float64[], sum=Int64[])
 	l = ReentrantLock() # create lock variable
 
@@ -38,7 +38,12 @@ function find_stable_fp_w(e_range, i_range, fps=[32], seed=seed)
 
 			ring = Ring(wₑᶠ=e, wᵢᶠ=i, fps=fps)
 			ring()
-			s = sum(ring.S)
+			if restrained
+				s = sum(ring.S[30:34, :])
+			else
+				s = sum(ring.S)
+			end
+
 
 			lock(l)
 			push!(stability_matrix, (e, i, s))
@@ -47,4 +52,3 @@ function find_stable_fp_w(e_range, i_range, fps=[32], seed=seed)
 	end
 	stability_matrix
 end
-

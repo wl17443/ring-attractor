@@ -10,6 +10,9 @@ i1 = 0.2
 step = 0.001
 seed=2020
 
-m = find_stable_fp_w(r_e, r_i, [32], seed)
+r_e = e0:step:e1
+r_i = i0:step:i1
+
+m = find_stable_fp_w(r_e, r_i, [32], seed, true)
 tmp = @dict e0 e1 i0 i1 step seed
 safesave(datadir("stability", "fixed_points", "sum", savename("fp", tmp, "csv")), m)
