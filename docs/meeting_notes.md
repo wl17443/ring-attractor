@@ -41,3 +41,16 @@
 - [ ] redo fp weight stability plot counting spikes only in the surrounding of the fixed point
 
 **wed after 3pm (meeting at 6.30)**
+
+### Meeting 7 
+
+Learning rule:
+
+- [x] Correct start and end points of learning
+- [ ] Start guessing learning rule (hebbian style)
+- [ ] find a baseline level of activity
+
+1. Find out coincidence for synapses
+2. Implement hebbs, making it work with different noise and make sure it's simmetric
+3. Look for the bounds of stability
+4. Fix picture of connectivity (all arrows but light grey, colored arrows
