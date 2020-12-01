@@ -3,6 +3,7 @@ using DrWatson
 
 using Distributions
 using LinearAlgebra
+using Combinatorics
 
 function sim_and_measure(ring::Ring)
     ring()
@@ -48,3 +49,17 @@ end
 function skipnan(v::AbstractArray)
     v[.!isnan.(v)]
 end
+
+function coincidence(v)
+	rows = size(v)[1]
+	s = zeros(rows, rows)
+
+	for c = 1:rows
+		for (i, j) = combinations(findall(v[:, c] > 0), 2)
+			s[i, j] += 1
+			s[j, i] += 1
+		end
+	end
+	s
+end
+	
