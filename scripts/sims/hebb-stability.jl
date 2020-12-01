@@ -10,8 +10,8 @@ h0 = 5e-10
 h1 = 5e-6
 n0 = 0.0
 n1 = 2e-3
-step_h = 5e-9
-step_n = 2e-6
+step_h = 1e-8
+step_n = 4e-6
 seed=2020
 
 r_h = h0:step_h:h1

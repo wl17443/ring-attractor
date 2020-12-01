@@ -59,9 +59,9 @@ function noise_vs_hebb(hebb_range, noise_range, seed=seed)
 	count_inside = DataFrame(noise=Float64[], hebb=Float64[], sum_inside=Int64[], sum_outside=Int64[])
 	l = ReentrantLock() # create lock variable
 
-	for h in hebb_range
+	Threads.@threads for h in hebb_range
 		@show h
-		Threads.@threads for n in noise_range
+		for n in noise_range
 
 			hring = HebbRing(noise=n, hebb=h, seed=seed)
 			hring()
@@ -78,3 +78,5 @@ function noise_vs_hebb(hebb_range, noise_range, seed=seed)
 	end
 	count_inside
 end
+
+
