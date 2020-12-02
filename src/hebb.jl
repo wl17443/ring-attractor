@@ -5,6 +5,8 @@ using Distributions
 using Combinatorics
 using Random
 
+include(srcdir("utils.jl"))
+
 const ms = 1e-3
 const mV = 1e-3
 const nF = 1e-9
@@ -27,15 +29,6 @@ const Nₑ = 5
 const Nᵢ = 7
 const fp_w = 2
 
-
-mutable struct CircularIndex
-       val::Int
-       per::Int
-end
-
-function ++(x::CircularIndex)
-       x.val = x.val % x.per + 1
-end
 
 mutable struct HebbRing <: Function
 	N::Int32
