@@ -4,7 +4,7 @@
 using DataFrames
 @everywhere using Printf
 include(srcdir("utils.jl"))
-include_everywhere("../../src/hebb.jl")
+include_everywhere("../src/hebb.jl")
 
 hebb_range = [5e-10:5e-9:5e-6;];
 noise_range = [0.0:2e-6:2e-3;];
