@@ -42,11 +42,6 @@ mutable struct HebbRing <: Function
 	time::Int32
 	t::Int32
 
-	noise::Float64
-	fpn::Int
-	fps::Array{Int64, 1}
-	seed::Int32
-
 	wₑ::Float64
 	wᵢ::Float64
 	wₑᶠ::Float64
@@ -63,22 +58,12 @@ mutable struct HebbRing <: Function
 	idx::CircularIndex
 	k::Array{Float64, 1}
 
-	hebb::Float64
 
-
-	function HebbRing(;N=64, time=10000, noise=5e-4, fps=(), fpn=0, seed=0, wₑ=0.05, wᵢ=0.10, wₑᶠ=0.05, wᵢᶠ=0.25, τᵣ=3, hebb=0.)
+	function HebbRing(;N=64, time=10000, wₑ=0.05, wᵢ=0.10, wₑᶠ=0.05, wᵢᶠ=0.25, τᵣ=3)
 		self = new()
 
 		self.N = N
 		self.time = time
-		self.noise = noise
-		self.fpn = fpn
-		self.fps = length(fps) == 0 ? get_fixed_points(N, fpn) : fps
-		self.seed = seed
-		if seed != 0
-			Random.seed!(seed)
-		end
-
 		self.wₑ = wₑ
 		self.wᵢ = wᵢ
 		self.wₑᶠ = wₑᶠ
@@ -94,17 +79,23 @@ mutable struct HebbRing <: Function
 		self.k = zeros(N)
 		self.t = 0
 
-		self.hebb = hebb
-
-		init!(self)
-
 		return self
 	end
 end
 
 
-function (r::HebbRing)(;resetWeights=true, stim=-1)
-	init!(r, resetWeights, stim)
+# hebb, noise, resetWeights, stim_pos, 
+"""
+	α: center of the stimulation
+	ϵ: noise
+	η: learning coefficient
+	fpn: number of fixed points
+	fps: indexes of fixed points (overrides fpn)
+	resetW: if 0: don't reset, if 1: reset only if η > 0, if 2: force reset
+	seed: random seed
+"""
+function (r::HebbRing)(;α=32, ϵ=5e-4, η=0., fps=(), fpn=0, resetW=1, seed=0)
+	init!(r, α, ϵ, η, fps, fpn, resetW, seed)
 
 	for r.t = 1:r.time-1
 		# Go forth one time step
@@ -114,13 +105,13 @@ function (r::HebbRing)(;resetWeights=true, stim=-1)
 		r.S[:, r.t] .= view(r.V, :, r.t) .== 0.
 
 		# Update weights
-		if r.hebb != 0.
+		if η != 0.
 			for (i, j) = combinations(findall(view(r.S, :, r.t) .> 0), 2)		
-				r.Wᵢ[i, j] += r.hebb
-				r.Wᵢ[j, i] += r.hebb
+				@inbounds r.Wᵢ[i, j] += η
+				@inbounds r.Wᵢ[j, i] += η
 
-				r.Wₑ[i, j] += r.hebb
-				r.Wₑ[j, i] += r.hebb
+				@inbounds r.Wₑ[i, j] += η
+				@inbounds r.Wₑ[j, i] += η
 			end
 		end
 
@@ -146,7 +137,7 @@ function (r::HebbRing)(;resetWeights=true, stim=-1)
 end
 
 
-function setweights!(r::HebbRing)
+function setweights!(r::HebbRing, fps)
 	r.Wₑ .= reshape(Float64[min(r.N - abs(i-k), abs(i-k)) for i in 1:r.N for k in 1:r.N], (r.N,r.N))
 	r.Wᵢ .= deepcopy(r.Wₑ)
 
@@ -157,28 +148,37 @@ function setweights!(r::HebbRing)
 	replace!(x -> 0., view(r.Wᵢ, r.Wᵢ .> Nₑ + Nᵢ))
 	replace!(x -> r.wᵢ,  view(r.Wᵢ, r.Wᵢ .> 0.))
 
-    for fp in r.fps
+    for fp in fps
 		replace!(view(r.Wₑ, (fp:fp+2).-1, :), r.wₑ => r.wₑᶠ)
 		replace!(view(r.Wᵢ, (fp:fp+2).-1, :), r.wᵢ => r.wᵢᶠ)
     end
-
-	r.Wₑ
-	r.Wᵢ
 end
 
-function init!(r::HebbRing, resetWeights=true, stim=-1)
+function init!(r::HebbRing, α, ϵ, η, fps, fpn, resetW, seed)
+	# Set seed
+	if seed != 0
+		Random.seed!(seed)
+	end
+
+	# No synaptic currents at the beginning
 	fill!(r.Δs, 0.2)
+
+	# Reset index
 	r.idx.val = 0
-	r.Z = rand(Normal(0., r.noise), r.N, r.time)
+
+	# Assign noise
+	r.Z .= rand(Normal(0., ϵ), r.N, r.time)
+
+	# Reset membrane potential
 	replace!(view(r.V, :, 1), 0. => Vᵣ)
 
-	if stim == -1
-		stim = r.N ÷ 2
-	end
-	replace!(view(r.V, (stim-2:stim+3), 1), Vᵣ => 0.)
+	# Force spikes as stimulation
+	replace!(view(r.V, (α-2:α+3), 1), Vᵣ => 0.)
 
-	if resetWeights
-		setweights!(r)
+	# Reset weights
+	if r.Wₑ == r.Wᵢ || resetW == 2 || resetW == 1 && η > 0.
+		fps = length(fps) == 0 ? get_fixed_points(r.N, fpn) : fps
+		setweights!(r, fps)
 	end
 end
 

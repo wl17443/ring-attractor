@@ -58,7 +58,7 @@ function scatter_w_range(m, title="")
 end
 
 function scatter_hebb(m, title="")
-	@df m scatter(:hebb, :noise, :sum_outside, markersize=0.1, size=(800,800),
+	@df m scatter(:hebb, :noise, :sum_inside, markersize=0.1, size=(800,800),
 				  zaxis=("# of spikes"), title=title, label=false)
 	xaxis!("Learning step")
 	yaxis!("Noise")

@@ -8,7 +8,7 @@ using DataFrames
 include(srcdir("plots.jl"))
 
 # Stability range for weights without noise
-m = wload(datadir("stability", "network", "sum","e0=0.01_e1=0.2_i0=0.05_i1=0.2_noise=0_step=0.001.csv")) |> DataFrame
+m = wload(datadir("stability", "network", "sum","stability/hebb/h0=0_h1=0_n0=0_n1=0.002_seed=2020_nn=500_nh=500.csv")) |> DataFrame
 m = m[0.05 .< m.exc .< 0.13, :]
 scatter_w_range(m, "Stability range for weights without noise")
 
