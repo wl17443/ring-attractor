@@ -57,3 +57,9 @@ inspect_weights(wₑᶠ=0.2, wᵢᶠ=0.0, noise=0.5e-3, fpn=1, seed=2020)
 
 # Critical zone
 inspect_weights(wₑᶠ=0.055, wᵢᶠ=0.005, noise=0.5e-3, fpn=1, seed=2020)
+
+
+# Hebb
+
+m = wload(datadir("stability", "hebb", "results_hebb.bson"))[:df] 
+

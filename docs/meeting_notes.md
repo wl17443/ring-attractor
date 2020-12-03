@@ -54,3 +54,15 @@ Learning rule:
 2. Implement hebbs, making it work with different noise and make sure it's simmetric
 3. Look for the bounds of stability
 4. Fix picture of connectivity (all arrows but light grey, colored arrows
+
+### Meeting 8 
+
+- [ ] remove inh learning
+- [ ] Try to see what happens with noise stronger
+- [ ] type for conn matrix
+- [ ] send bg link
+- [ ] store conn matrix
+- [ ] reduce bits 
+- [ ] diff between average matrix and starting
+- [ ] matrix of std of weights
+- [ ] run test with high noise and 

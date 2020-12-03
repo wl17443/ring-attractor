@@ -39,8 +39,7 @@ mutable struct HebbRing <: Function
 	wᵢ::Float64
 	wₑᶠ::Float64
 	wᵢᶠ::Float64
-	Wₑ::Array{Float64, 2}
-	Wᵢ::Array{Float64, 2}
+	W::WeightMatrix
 
 
 	S::Array{Bool, 2}
@@ -61,9 +60,8 @@ mutable struct HebbRing <: Function
 		self.wᵢ = wᵢ
 		self.wₑᶠ = wₑᶠ
 		self.wᵢᶠ = wᵢᶠ
+		self.W = WeightMatrix()
 
-		self.Wₑ = zeros(N, N)
-		self.Wᵢ = zeros(N, N)
 		self.V = zeros(N, time)
 		self.Z = zeros(N, time)
 		self.S = falses(N, time)
@@ -100,11 +98,7 @@ function (r::HebbRing)(;α=32, ϵ=5e-4, η=0., fps=(), fpn=0, resetW=1, seed=0)
 		# Update weights
 		if η != 0.
 			for (i, j) = combinations(findall(view(r.S, :, r.t) .> 0), 2)		
-				@inbounds r.Wᵢ[i, j] += η
-				@inbounds r.Wᵢ[j, i] += η
-
-				@inbounds r.Wₑ[i, j] += η
-				@inbounds r.Wₑ[j, i] += η
+				@inbounds r.W[i, j] += η
 			end
 		end
 
@@ -112,7 +106,7 @@ function (r::HebbRing)(;α=32, ϵ=5e-4, η=0., fps=(), fpn=0, resetW=1, seed=0)
 		r.k .= @views r.Δs[:, r.idx.val] .* exp.(-r.Δs[:, r.idx.val] ./ τₛ) .* (kₛ * 1e-6 / Cₘ)
 
 		# Caluculate voltage update
-		r.V[:, r.t+1] .= @views r.V[:, r.t] .+ ((Eₗₜ .- r.V[:, r.t] ./ τₘ ) .- (r.V[:, r.t].-Eₑ) .* (r.Wₑ' * r.k) .- (r.V[:, r.t].-Eᵢ) .* (r.Wᵢ' * r.k)) .* dt
+		r.V[:, r.t+1] .= @views r.V[:, r.t] .+ ((Eₗₜ .- r.V[:, r.t] ./ τₘ ) .- (r.V[:, r.t].-Eₑ) .* (r.W.e' * r.k) .- (r.V[:, r.t].-Eᵢ) .* (r.W.i' * r.k)) .* dt
 		r.V[:, r.t+1] .+= @view r.Z[:, r.t+1]
 
 		# Make neurons spike
@@ -129,35 +123,27 @@ function (r::HebbRing)(;α=32, ϵ=5e-4, η=0., fps=(), fpn=0, resetW=1, seed=0)
 	end
 end
 
-
-function setweights!(r::HebbRing, fps)
-	r.Wₑ .= reshape(Float64[min(r.N - abs(i-k), abs(i-k)) for i in 1:r.N for k in 1:r.N], (r.N,r.N))
-	r.Wᵢ .= deepcopy(r.Wₑ)
-
-	replace!(x -> 0., view(r.Wₑ, r.Wₑ .> Nₑ))
-	replace!(x -> r.wₑ, view(r.Wₑ, r.Wₑ .> 0.))
-
-	replace!(x -> 0., view(r.Wᵢ, Nₑ .>= r.Wᵢ))
-	replace!(x -> 0., view(r.Wᵢ, r.Wᵢ .> Nₑ + Nᵢ))
-	replace!(x -> r.wᵢ,  view(r.Wᵢ, r.Wᵢ .> 0.))
-
-    for fp in fps
-		replace!(view(r.Wₑ, (fp:fp+2).-1, :), r.wₑ => r.wₑᶠ)
-		replace!(view(r.Wᵢ, (fp:fp+2).-1, :), r.wᵢ => r.wᵢᶠ)
-    end
-end
-
 function init!(r::HebbRing, α, ϵ, η, fps, fpn, resetW, seed)
+	# Get fixed points
+	fps = length(fps) == 0 ? get_fixed_points(r.N, fpn) : fps
+
 	# Set seed
 	if seed != 0
 		Random.seed!(seed)
 	end
+	# Reset weights
+	if r.t == 0 || resetW == 2 || resetW == 1 && η > 0.
+		r.W = WeightMatrix(r.N, r.wₑ, r.wᵢ, r.wₑᶠ, r.wᵢᶠ, Nₑ, Nᵢ, fps)
+	end
 
-	# No synaptic currents at the beginning
-	fill!(r.Δs, 0.2)
+	# Reset time
+	r.t = 0
 
 	# Reset index
 	r.idx.val = 0
+
+	# No synaptic currents at the beginning
+	fill!(r.Δs, 0.2)
 
 	# Assign noise
 	r.Z .= rand(Normal(0., ϵ), r.N, r.time)
@@ -167,20 +153,4 @@ function init!(r::HebbRing, α, ϵ, η, fps, fpn, resetW, seed)
 
 	# Force spikes as stimulation
 	replace!(view(r.V, (α-2:α+3), 1), Vᵣ => 0.)
-
-	# Reset weights
-	if r.Wₑ == r.Wᵢ || resetW == 2 || resetW == 1 && η > 0.
-		fps = length(fps) == 0 ? get_fixed_points(r.N, fpn) : fps
-		setweights!(r, fps)
-	end
 end
-
-function get_fixed_points(N, fpn)::Array{Int64, 1}
-	if fpn == 0
-		return []
-	end
-
-	findall([1:1:N;] .% (N ÷ fpn) .== 0) .- N ÷ fpn ÷ 2
-end
-
-
