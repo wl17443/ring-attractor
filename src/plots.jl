@@ -57,6 +57,13 @@ function scatter_w_range(m, title="")
 	yaxis!("Inhibitory weights")
 end
 
+function scatter_hebb(m, title="")
+	@df m scatter(:hebb, :noise, :sum_inside, markersize=0.1, size=(800,800),
+				  zaxis=("# of spikes"), title=title, label=false)
+	xaxis!("Learning step")
+	yaxis!("Noise")
+end
+
 function inspect_weights(;wₑ=0.05, wᵢ=0.1, wₑᶠ=0.05, wᵢᶠ=0.1, noise=0, fpn=0, long=false, seed=0)
 	ring = Ring(wₑ=wₑ, wᵢ=wᵢ, wₑᶠ=wₑᶠ, wᵢᶠ=wᵢᶠ, noise=noise, fpn=fpn, seed=seed)
 	ring()
