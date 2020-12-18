@@ -1,0 +1,164 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_OUTPUT_EXCMD	mixed	/number, pattern, mixed, or combineV2/
+!_TAG_OUTPUT_FILESEP	slash	/slash or backslash/
+!_TAG_OUTPUT_MODE	u-ctags	/u-ctags or e-ctags/
+!_TAG_PATTERN_LENGTH_LIMIT	96	/0 for no limit/
+!_TAG_PROC_CWD	/home/ginko/ring-attractor/	//
+!_TAG_PROGRAM_AUTHOR	Universal Ctags Team	//
+!_TAG_PROGRAM_NAME	Universal Ctags	/Derived from Exuberant Ctags/
+!_TAG_PROGRAM_URL	https://ctags.io/	/official site/
+!_TAG_PROGRAM_VERSION	5.9.0	/e52cf4a7/
+Base.IndexStyle	src/utils.jl	/^Base.IndexStyle(::Type{<:WeightMatrix}) = IndexLinear()$/;"	f
+Base.getindex	src/utils.jl	/^Base.getindex(C::WeightMatrix, i::Int, j::Int) = C.W[i, j]$/;"	f
+Base.setindex!	src/utils.jl	/^function Base.setindex!(C::WeightMatrix, v::Float64, i::Int, j::Int) $/;"	f
+Base.size	src/utils.jl	/^Base.size(C::WeightMatrix) = (size(C.W))$/;"	f
+CircularIndex	src/ring-attractor.jl	/^mutable struct CircularIndex$/;"	s
+CircularIndex	src/utils.jl	/^mutable struct CircularIndex$/;"	s
+Cₘ	_research/diffeq.jl	/^const Cₘ = 1e-9$/;"	c
+Cₘ	src/hebb.jl	/^const Cₘ = 1e-9$/;"	c
+Cₘ	src/ring-attractor.jl	/^const Cₘ = 1e-9$/;"	c
+Eᵢ	_research/diffeq.jl	/^const Eᵢ = -70 * mV$/;"	c
+Eᵢ	src/hebb.jl	/^const Eᵢ = -70 * mV$/;"	c
+Eᵢ	src/ring-attractor.jl	/^const Eᵢ = -70 * mV$/;"	c
+Eₑ	_research/diffeq.jl	/^const Eₑ = 0.$/;"	c
+Eₑ	src/hebb.jl	/^const Eₑ = 0.$/;"	c
+Eₑ	src/ring-attractor.jl	/^const Eₑ = 0.$/;"	c
+Eₗ	_research/diffeq.jl	/^const Eₗ = -70 * mV$/;"	c
+Eₗ	src/hebb.jl	/^const Eₗ = -70 * mV$/;"	c
+Eₗ	src/ring-attractor.jl	/^const Eₗ = -70 * mV$/;"	c
+Eₗₜ	_research/diffeq.jl	/^const Eₗₜ = Eₗ\/τₛ$/;"	c
+Eₗₜ	src/hebb.jl	/^const Eₗₜ = Eₗ\/τₛ$/;"	c
+Eₗₜ	src/ring-attractor.jl	/^const Eₗₜ = Eₗ\/τₛ$/;"	c
+Eₘ	_research/diffeq.jl	/^const Eₘ = -70 * mV$/;"	c
+Eₘ	src/hebb.jl	/^const Eₘ = -70 * mV$/;"	c
+Eₘ	src/ring-attractor.jl	/^const Eₘ = -70 * mV$/;"	c
+HebbRing	src/hebb.jl	/^	function HebbRing(;N=64, time=10000, wₑ=0.05, wᵢ=0.10, wₑᶠ=0.05, wᵢᶠ=0.25, τᵣ=3)$/;"	f	struct:HebbRing
+HebbRing	src/hebb.jl	/^mutable struct HebbRing <: Function$/;"	s
+N	_research/diffeq.jl	/^	N::Int32$/;"	g	struct:Network
+N	src/hebb.jl	/^	N::Int32$/;"	g	struct:HebbRing
+N	src/ring-attractor.jl	/^	N::Int32$/;"	g	struct:Ring
+Network	_research/diffeq.jl	/^	function Network(;N=64, time=10000, noise=5e-4, fps=(), seed=0, w_exc=0.05, w_inh=0.10, w_exc_f/;"	f	struct:Network
+Network	_research/diffeq.jl	/^mutable struct Network <: Function$/;"	s
+Nᵢ	src/hebb.jl	/^const Nᵢ = 7$/;"	c
+Nᵢ	src/ring-attractor.jl	/^const Nᵢ = 7$/;"	c
+Nₑ	src/hebb.jl	/^const Nₑ = 5$/;"	c
+Nₑ	src/ring-attractor.jl	/^const Nₑ = 5$/;"	c
+Ring	src/ring-attractor.jl	/^	function Ring(;N=64, time=10000, noise=5e-4, fps=(), fpn=0, seed=0, wₑ=0.05, wᵢ=0.10, wₑᶠ/;"	f	struct:Ring
+Ring	src/ring-attractor.jl	/^mutable struct Ring <: Function$/;"	s
+S	src/hebb.jl	/^	S::Array{Bool, 2}$/;"	g	struct:HebbRing
+S	src/ring-attractor.jl	/^	S::Array{Bool, 2}$/;"	g	struct:Ring
+V	src/hebb.jl	/^	V::Array{Float64, 2}$/;"	g	struct:HebbRing
+V	src/ring-attractor.jl	/^	V::Array{Float64, 2}$/;"	g	struct:Ring
+Vᵣ	_research/diffeq.jl	/^const Vᵣ = -80 * mV$/;"	c
+Vᵣ	src/hebb.jl	/^const Vᵣ = -80 * mV$/;"	c
+Vᵣ	src/ring-attractor.jl	/^const Vᵣ = -80 * mV$/;"	c
+Vₜ	_research/diffeq.jl	/^const Vₜ = -48 * mV$/;"	c
+Vₜ	src/hebb.jl	/^const Vₜ = -48 * mV$/;"	c
+Vₜ	src/ring-attractor.jl	/^const Vₜ = -48 * mV$/;"	c
+W	src/hebb.jl	/^	W::WeightMatrix$/;"	g	struct:HebbRing
+W	src/utils.jl	/^	W::Array{Float64, 2}$/;"	g	struct:WeightMatrix
+We	_research/diffeq.jl	/^	We::Array{Float64, 2}$/;"	g	struct:Network
+WeightMatrix	src/utils.jl	/^	function WeightMatrix(N=32, wₑ=0.05, wᵢ=0.1, wₑᶠ=0.05, wᵢᶠ=0.20, Nₑ=5, Nᵢ=7, fp/;"	f	struct:WeightMatrix
+WeightMatrix	src/utils.jl	/^struct WeightMatrix <: AbstractArray{Float64, 2}$/;"	s
+Wi	_research/diffeq.jl	/^	Wi::Array{Float64, 2}$/;"	g	struct:Network
+Wᵢ	src/ring-attractor.jl	/^	Wᵢ::Array{Float64, 2}$/;"	g	struct:Ring
+Wₑ	src/ring-attractor.jl	/^	Wₑ::Array{Float64, 2}$/;"	g	struct:Ring
+Z	src/hebb.jl	/^	Z::Array{Float64, 2}$/;"	g	struct:HebbRing
+Z	src/ring-attractor.jl	/^	Z::Array{Float64, 2}$/;"	g	struct:Ring
+coincidence	src/stats.jl	/^function coincidence(v)$/;"	f
+decay	_research/decay.jl	/^function decay()$/;"	f
+dt	_research/diffeq.jl	/^const dt = 1e-3$/;"	c
+dt	src/hebb.jl	/^const dt = 1e-3$/;"	c
+dt	src/ring-attractor.jl	/^const dt = 1e-3$/;"	c
+e	src/utils.jl	/^	e::Array{Float64, 2}$/;"	g	struct:WeightMatrix
+f	_research/decay.jl	/^f(x) = a*exp(-x\/b)$/;"	f
+f	scripts/sims/hebb-stability.jl	/^@everywhere function f(par)$/;"	f
+find_stable_fp_w	scripts/sims/stable_fp.jl	/^function find_stable_fp_w(e_range, i_range, fps=[32], seed=seed, restrained=true)$/;"	f
+find_stable_w	scripts/sims/stable_w.jl	/^function find_stable_w(e_range, i_range, noise=0., seed=0)$/;"	f
+fp_w	src/hebb.jl	/^const fp_w = 2$/;"	c
+fp_w	src/ring-attractor.jl	/^const fp_w = 2$/;"	c
+fp_width	_research/diffeq.jl	/^const fp_width = 2$/;"	c
+fpn	src/ring-attractor.jl	/^	fpn::Int$/;"	g	struct:Ring
+fps	_research/diffeq.jl	/^	fps::Tuple$/;"	g	struct:Network
+fps	src/ring-attractor.jl	/^	fps::Array{Int64, 1}$/;"	g	struct:Ring
+genweights	_research/diffeq.jl	/^function genweights(N, fps, w)$/;"	f
+get_fixed_points	src/ring-attractor.jl	/^function get_fixed_points(N, fpn)::Array{Int64, 1}$/;"	f
+get_fixed_points	src/utils.jl	/^function get_fixed_points(N, fpn)::Array{Int16, 1}$/;"	f
+heatmap_hebb	src/plots.jl	/^function heatmap_hebb(m, title="")$/;"	f
+i	src/utils.jl	/^	i::Array{Float64, 2}$/;"	g	struct:WeightMatrix
+idx	src/hebb.jl	/^	idx::CircularIndex$/;"	g	struct:HebbRing
+idx	src/ring-attractor.jl	/^	idx::CircularIndex$/;"	g	struct:Ring
+include_everywhere	src/utils.jl	/^function include_everywhere(filepath)$/;"	f
+init!	src/hebb.jl	/^function init!(r::HebbRing, α, ϵ, η, fps, fpn, resetW, seed)$/;"	f
+init!	src/ring-attractor.jl	/^function init!(r::Ring)$/;"	f
+inspect_weights	src/plots.jl	/^function inspect_weights(;wₑ=0.05, wᵢ=0.1, wₑᶠ=0.05, wᵢᶠ=0.1, noise=0, fpn=0, long=f/;"	f
+k	src/hebb.jl	/^	k::Array{Float64, 1}$/;"	g	struct:HebbRing
+k	src/ring-attractor.jl	/^	k::Array{Float64, 1}$/;"	g	struct:Ring
+kl_divergence	src/stats.jl	/^function kl_divergence(n1, n2)$/;"	f
+kₛ	_research/diffeq.jl	/^const kₛ = 1\/(5 * ms * exp(-1.))$/;"	c
+kₛ	src/hebb.jl	/^const kₛ = 1\/(5 * ms * exp(-1.))$/;"	c
+kₛ	src/ring-attractor.jl	/^const kₛ = 1\/(5 * ms * exp(-1.))$/;"	c
+mV	_research/diffeq.jl	/^const mV = 1e-3$/;"	c
+mV	src/hebb.jl	/^const mV = 1e-3$/;"	c
+mV	src/ring-attractor.jl	/^const mV = 1e-3$/;"	c
+mean_activity	_research/decay.jl	/^function mean_activity(N, par)$/;"	f
+ms	_research/diffeq.jl	/^const ms = 1e-3$/;"	c
+ms	src/hebb.jl	/^const ms = 1e-3$/;"	c
+ms	src/ring-attractor.jl	/^const ms = 1e-3$/;"	c
+nF	_research/diffeq.jl	/^const nF = 1e-9$/;"	c
+nF	src/hebb.jl	/^const nF = 1e-9$/;"	c
+nF	src/ring-attractor.jl	/^const nF = 1e-9$/;"	c
+n_exc	_research/diffeq.jl	/^const n_exc = 5$/;"	c
+n_inh	_research/diffeq.jl	/^const n_inh = 7$/;"	c
+noise	_research/diffeq.jl	/^	noise::Float64$/;"	g	struct:Network
+noise	src/ring-attractor.jl	/^	noise::Float64$/;"	g	struct:Ring
+partial_filter	scripts/plots/gifs.jl	/^function partial_filter(S, N, bin=100, step=1)$/;"	f
+per	src/ring-attractor.jl	/^       per::Int$/;"	g	struct:CircularIndex
+per	src/utils.jl	/^       per::Int$/;"	g	struct:CircularIndex
+plot_biasvariance	src/plots.jl	/^function plot_biasvariance(df)$/;"	f
+plot_stability_range	src/plots.jl	/^function plot_stability_range(m)$/;"	f
+plot_w_range	src/plots.jl	/^function plot_w_range(m)$/;"	f
+scatter_biasvariance	src/plots.jl	/^function scatter_biasvariance(df)$/;"	f
+scatter_hebb	src/plots.jl	/^function scatter_hebb(m, title="")$/;"	f
+scatter_stability_range	src/plots.jl	/^function scatter_stability_range(m)$/;"	f
+scatter_w_range	src/plots.jl	/^function scatter_w_range(m, title="")$/;"	f
+sd	_research/diffeq.jl	/^	sd::Array{Float64, 2}$/;"	g	struct:Network
+seed	_research/diffeq.jl	/^	seed::Int32$/;"	g	struct:Network
+seed	src/ring-attractor.jl	/^	seed::Int32$/;"	g	struct:Ring
+setweights!	src/ring-attractor.jl	/^function setweights!(r::Ring)$/;"	f
+sim_and_measure	src/stats.jl	/^function sim_and_measure(ring::Ring)$/;"	f
+simulate	_research/diffeq.jl	/^function simulate(p, v)$/;"	f
+skipnan	src/stats.jl	/^function skipnan(v::AbstractArray)$/;"	f
+slice	src/stats.jl	/^function slice(spikes, range)$/;"	f
+slide_measures	src/stats.jl	/^function slide_measures(s)$/;"	f
+sliding_filter	src/stats.jl	/^function sliding_filter(ring::Ring, bin=100, step=50)$/;"	f
+t	_research/diffeq.jl	/^	t::Int32$/;"	g	struct:Network
+t	src/hebb.jl	/^	t::Int32$/;"	g	struct:HebbRing
+t	src/ring-attractor.jl	/^	t::Int32$/;"	g	struct:Ring
+testWM	tests/weight-matrix.jl	/^function testWM()$/;"	f
+time	_research/diffeq.jl	/^	time::Int32$/;"	g	struct:Network
+time	src/hebb.jl	/^	time::Int32$/;"	g	struct:HebbRing
+time	src/ring-attractor.jl	/^	time::Int32$/;"	g	struct:Ring
+v	_research/diffeq.jl	/^	v::Array{Float64, 1}$/;"	g	struct:Network
+val	src/ring-attractor.jl	/^       val::Int$/;"	g	struct:CircularIndex
+val	src/utils.jl	/^       val::Int$/;"	g	struct:CircularIndex
+wᵢ	src/hebb.jl	/^	wᵢ::Float64$/;"	g	struct:HebbRing
+wᵢ	src/ring-attractor.jl	/^	wᵢ::Float64$/;"	g	struct:Ring
+wᵢᶠ	src/hebb.jl	/^	wᵢᶠ::Float64$/;"	g	struct:HebbRing
+wᵢᶠ	src/ring-attractor.jl	/^	wᵢᶠ::Float64$/;"	g	struct:Ring
+wₑ	src/hebb.jl	/^	wₑ::Float64$/;"	g	struct:HebbRing
+wₑ	src/ring-attractor.jl	/^	wₑ::Float64$/;"	g	struct:Ring
+wₑᶠ	src/hebb.jl	/^	wₑᶠ::Float64$/;"	g	struct:HebbRing
+wₑᶠ	src/ring-attractor.jl	/^	wₑᶠ::Float64$/;"	g	struct:Ring
+Δs	src/hebb.jl	/^	Δs::Array{Float64, 2}$/;"	g	struct:HebbRing
+Δs	src/ring-attractor.jl	/^	Δs::Array{Float64, 2}$/;"	g	struct:Ring
+τᵣ	_research/diffeq.jl	/^const τᵣ = 2 * ms$/;"	c
+τᵣ	src/hebb.jl	/^const τᵣ = 2 * ms$/;"	c
+τᵣ	src/ring-attractor.jl	/^const τᵣ = 2 * ms$/;"	c
+τₘ	_research/diffeq.jl	/^const τₘ = 5 * ms$/;"	c
+τₘ	src/hebb.jl	/^const τₘ = 5 * ms$/;"	c
+τₘ	src/ring-attractor.jl	/^const τₘ = 5 * ms$/;"	c
+τₛ	_research/diffeq.jl	/^const τₛ = 5 * ms$/;"	c
+τₛ	src/hebb.jl	/^const τₛ = 5 * ms$/;"	c
+τₛ	src/ring-attractor.jl	/^const τₛ = 5 * ms$/;"	c

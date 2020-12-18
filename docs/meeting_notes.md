@@ -26,7 +26,7 @@
 - [x] Analytic kl 
 - [x] Compute divergence in sliding window 
 - [x] We can compute length of vector of different in std, difference in mean, error between the two time points (not gaussian)
-- [ ] If bump drift too much terminate
+- [n] If bump drift too much terminate
 
 ### Meeting 5
 
@@ -37,8 +37,8 @@
 ### Meeting 6
 
 
-- [ ] summarized mehrdad meeting
-- [ ] redo fp weight stability plot counting spikes only in the surrounding of the fixed point
+- [x] summarized mehrdad meeting
+- [x] redo fp weight stability plot counting spikes only in the surrounding of the fixed point
 
 **wed after 3pm (meeting at 6.30)**
 
@@ -47,22 +47,22 @@
 Learning rule:
 
 - [x] Correct start and end points of learning
-- [ ] Start guessing learning rule (hebbian style)
-- [ ] find a baseline level of activity
+- [x] Start guessing learning rule (hebbian style)
+- [?] find a baseline level of activity
 
-1. Find out coincidence for synapses
-2. Implement hebbs, making it work with different noise and make sure it's simmetric
-3. Look for the bounds of stability
-4. Fix picture of connectivity (all arrows but light grey, colored arrows
+- [x] Find out coincidence for synapses
+- [x] Implement hebbs, making it work with different noise and make sure it's simmetric
+- [x] Look for the bounds of stability
+- [ ] Fix picture of connectivity (all arrows but light grey, colored arrows
 
 ### Meeting 8 
 
-- [ ] remove inh learning
-- [ ] Try to see what happens with noise stronger
-- [ ] type for conn matrix
-- [ ] send bg link
-- [ ] store conn matrix
-- [ ] reduce bits 
+- [x] type for conn matrix
+- [x] send bg link
+- [?] reduce bits 
+- [?] remove inh learning
+- [x] store conn matrix
+- [x] diff between matrix and starting
 - [ ] diff between average matrix and starting
 - [ ] matrix of std of weights
-- [ ] run test with high noise and 
+- [ ] run test with high noise and see if connections get modified also out of the bump, in which case we should add a decay element

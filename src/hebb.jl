@@ -30,6 +30,20 @@ const Nᵢ = 7
 const fp_w = 2
 
 
+"""
+	HebbRing([N, time, wₑ, wᵢ, wₑᶠ, wᵢᶠ, τᵣ])
+
+Create the network preallocating all the arrays
+
+# Arguments
+- `N::Int=64`: number of neurons in the network
+- `time::Int=10000`: time of simulation (in milliseconds)
+- `wₑ::Float64=0.05`: excitatory weight
+- `wᵢ::Float64=0.10`: inhibitory weight
+- `wₑᶠ::Float64=0.05`: excitatory weight for fixed points  
+- `wᵢᶠ::Float64=0.25`: inhibitory weight for fixed points
+- `τᵣ::Int=3`: refractory period (in milliseconds)
+"""
 mutable struct HebbRing <: Function
 	N::Int32
 	time::Int32
@@ -75,15 +89,19 @@ mutable struct HebbRing <: Function
 end
 
 
-# hebb, noise, resetWeights, stim_pos, 
 """
-	α: center of the stimulation
-	ϵ: noise
-	η: learning coefficient
-	fpn: number of fixed points
-	fps: indexes of fixed points (overrides fpn)
-	resetW: if 0: don't reset, if 1: reset only if η > 0, if 2: force reset
-	seed: random seed
+	HebbRing([α, ϵ, η, fps, fpn, resetW, seed])
+
+Simulate the network
+
+# Arguments
+- `α::Int=32`: center of the stimulation
+- `ϵ::Float64=5e-4`: noise
+- `η::Float64=0.`: learning coefficient
+- `fps::Tuple=()`: indexes of fixed points (overrides fpn)
+- `fpn::Int=0`: number of fixed points
+- `resetW::Int=1`: if 0: don't reset, if 1: reset only if η > 0, if 2: force reset
+- `seed::Int=1`: random seed
 """
 function (r::HebbRing)(;α=32, ϵ=5e-4, η=0., fps=(), fpn=0, resetW=1, seed=0)
 	init!(r, α, ϵ, η, fps, fpn, resetW, seed)
@@ -123,6 +141,21 @@ function (r::HebbRing)(;α=32, ϵ=5e-4, η=0., fps=(), fpn=0, resetW=1, seed=0)
 	end
 end
 
+"""
+	init!(r, α, ϵ, η, fps, fpn, resetW, seed)
+
+Initialize the network
+
+# Arguments
+- `r::HebbRing`: network to initialize
+- `α::Int=32`: center of the stimulation
+- `ϵ::Float64=5e-4`: noise
+- `η::Float64=0.`: learning coefficient
+- `fps::Tuple=()`: indexes of fixed points (overrides fpn)
+- `fpn::Int=0`: number of fixed points
+- `resetW::Int=1`: if 0: don't reset, if 1: reset only if η > 0, if 2: force reset
+- `seed::Int=1`: random seed
+"""
 function init!(r::HebbRing, α, ϵ, η, fps, fpn, resetW, seed)
 	# Get fixed points
 	fps = length(fps) == 0 ? get_fixed_points(r.N, fpn) : fps

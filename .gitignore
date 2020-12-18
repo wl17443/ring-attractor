@@ -1,7 +1,8 @@
 plots/neuromatch/
 plots/seaborn/
 plots/julia/
-luxor/
-data/stability/
-data/biasvariance
-notebooks/notebooks
+_research/luxor/
+data/stability/*
+data/biasvariance/*
+data/hebb/*
+notebooks/notebooks/

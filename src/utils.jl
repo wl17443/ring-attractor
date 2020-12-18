@@ -31,7 +31,7 @@ struct WeightMatrix <: AbstractArray{Float64, 2}
 	e::Array{Float64, 2}
 	i::Array{Float64, 2}
 
-	function WeightMatrix(N=32, wₑ=0.05, wᵢ=0.1, wₑᶠ=0.05, wᵢᶠ=0.20, Nₑ=5, Nᵢ=7, fps=())
+	function WeightMatrix(N=64, wₑ=0.05, wᵢ=0.1, wₑᶠ=0.05, wᵢᶠ=0.20, Nₑ=5, Nᵢ=7, fps=())
 		e = reshape(Float64[min(N - abs(i-k), abs(i-k)) for i in 1:N for k in 1:N], (N,N))
 		i = deepcopy(e)
 
