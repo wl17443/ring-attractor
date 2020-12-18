@@ -10,7 +10,7 @@ function sim_and_measure(ring::Ring)
     sliding_filter(ring)
 end
 
-function sliding_filter(ring::Ring, bin=100, step=50)
+function sliding_filter(ring, bin=100, step=50)
     # start = 6600 # compute it
     spikes = convert(Array{Float64, 2}, ring.S)
     spikes .*= [1:1:ring.N;]

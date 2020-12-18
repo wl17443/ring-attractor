@@ -1,3 +1,4 @@
+# DEPRECATED
 using DrWatson
 @quickactivate "Ring Attractor"
 
